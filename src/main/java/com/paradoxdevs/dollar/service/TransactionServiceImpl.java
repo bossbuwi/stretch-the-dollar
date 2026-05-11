@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<TransactionDto> getTransactions() {
         List<TransactionDto> transactions = new ArrayList<>();
         transactionRepository.findAll().forEach(transaction -> {
-            TransactionDto dto = transactionMapper.transactionToTransactionDto(transaction);
+            TransactionDto dto = transactionMapper.entityToDto(transaction);
             transactions.add(dto);
         });
         return transactions;
@@ -33,23 +33,23 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDto getTransactionById(Long id) {
         Transaction transaction = transactionRepository.findById(id).orElse(null);
-        return transactionMapper.transactionToTransactionDto(transaction);
+        return transactionMapper.entityToDto(transaction);
     }
 
     @Override
     public TransactionDto addTransaction(TransactionDto transactionDto) {
-        Transaction input = transactionMapper.transactionDtoToTransaction(transactionDto);
+        Transaction input = transactionMapper.dtoToEntity(transactionDto);
         Transaction output = transactionRepository.save(input);
-        return transactionMapper.transactionToTransactionDto(output);
+        return transactionMapper.entityToDto(output);
     }
 
     @Override
     public TransactionDto updateTransaction(Long id, TransactionDto transaction) {
         Transaction current = transactionRepository.findById(id).orElse(null);
-        Transaction update = transactionMapper.transactionDtoToTransaction(transaction);
+        Transaction update = transactionMapper.dtoToEntity(transaction);
         BeanUtils.copyProperties(update, current, "id");
         Transaction output = transactionRepository.save(current);
-        return transactionMapper.transactionToTransactionDto(output);
+        return transactionMapper.entityToDto(output);
     }
 
     @Override

@@ -35,7 +35,7 @@ public class TransactionController {
 
         List<TransactionDto> transactions = transactionService.getTransactions();
         for (TransactionDto transactionDto : transactions) {
-            TransactionResponse transactionResponse = transactionMapper.transactionDtoToTransactionResponse(transactionDto);
+            TransactionResponse transactionResponse = transactionMapper.dtoToResponse(transactionDto);
             response.add(transactionResponse);
         }
 
@@ -45,19 +45,19 @@ public class TransactionController {
     @GetMapping("/")
     public TransactionResponse getTransaction(@RequestParam("id") long id) {
         TransactionDto transactionDto = transactionService.getTransactionById(id);
-        return transactionMapper.transactionDtoToTransactionResponse(transactionDto);
+        return transactionMapper.dtoToResponse(transactionDto);
     }
 
     @PostMapping("/")
     public TransactionResponse createTransaction(@RequestBody TransactionRequest request) {
-        TransactionDto dto = transactionService.addTransaction(transactionMapper.transactionRequestToTransactionDto(request));
-        return transactionMapper.transactionDtoToTransactionResponse(dto);
+        TransactionDto dto = transactionService.addTransaction(transactionMapper.requestToDto(request));
+        return transactionMapper.dtoToResponse(dto);
     }
 
     @PutMapping("/{id}")
     public TransactionResponse updateTransaction(@PathVariable Long id, @RequestBody TransactionRequest request) {
-        TransactionDto dto = transactionService.updateTransaction(id, transactionMapper.transactionRequestToTransactionDto(request));
-        return transactionMapper.transactionDtoToTransactionResponse(dto);
+        TransactionDto dto = transactionService.updateTransaction(id, transactionMapper.requestToDto(request));
+        return transactionMapper.dtoToResponse(dto);
     }
 
     @DeleteMapping("/{id}")
