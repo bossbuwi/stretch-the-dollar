@@ -1,0 +1,25 @@
+info:
+  name: update
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: http://localhost:8080/transaction/1
+  body:
+    type: json
+    data: |-
+      {
+        "transactionName": "replace",
+        "description": "manual input",
+        "transactionType": "SAVINGS",
+        "amount": 120,
+        "currency": "USD"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

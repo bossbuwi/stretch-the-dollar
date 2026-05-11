@@ -1,0 +1,25 @@
+info:
+  name: add
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8080/transaction/
+  body:
+    type: json
+    data: |-
+      {
+        "transactionName": "input1",
+        "description": "manual input",
+        "transactionType": "SAVINGS",
+        "amount": 12,
+        "currency": "PHP"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

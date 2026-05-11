@@ -1,4 +1,4 @@
-package com.paradoxdevs.dollar.controller;
+package com.paradoxdevs.dollar.test;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
