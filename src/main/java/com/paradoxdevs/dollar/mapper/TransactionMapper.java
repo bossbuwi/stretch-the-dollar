@@ -6,20 +6,24 @@ import com.paradoxdevs.dollar.entity.Transaction;
 import com.paradoxdevs.dollar.model.TransactionDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel="spring")
 public interface TransactionMapper {
 
     @Mapping(target="transactionId", source="id")
     @Mapping(target="transactionName", source="name")
-    TransactionDto transactionToTransactionDto(Transaction transaction);
+    TransactionDto entityToDto(Transaction transaction);
 
-    TransactionResponse transactionDtoToTransactionResponse(TransactionDto transactionDto);
+    TransactionResponse dtoToResponse(TransactionDto transactionDto);
 
     @Mapping(target="id", source="transactionId")
     @Mapping(target="name", source="transactionName")
-    Transaction transactionDtoToTransaction(TransactionDto transactionDto);
+    Transaction dtoToEntity(TransactionDto transactionDto);
 
     @Mapping(target="transactionId", ignore=true)
-    TransactionDto transactionRequestToTransactionDto(TransactionRequest transactionRequest);
+    TransactionDto requestToDto(TransactionRequest transactionRequest);
+
+    @Mapping(target = "name", source = "transactionName")
+    void updateEntityFromDto(TransactionDto transactionDto, @MappingTarget Transaction transaction);
 }
