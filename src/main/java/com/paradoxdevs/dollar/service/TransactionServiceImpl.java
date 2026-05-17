@@ -1,14 +1,14 @@
 package com.paradoxdevs.dollar.service;
 
 import com.paradoxdevs.dollar.entity.Transaction;
+import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionMapper;
 import com.paradoxdevs.dollar.model.TransactionDto;
 import com.paradoxdevs.dollar.repository.TransactionRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -22,18 +22,17 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionDto> getTransactions() {
-        List<TransactionDto> transactions = new ArrayList<>();
-        transactionRepository.findAll().forEach(transaction -> {
-            TransactionDto dto = transactionMapper.entityToDto(transaction);
-            transactions.add(dto);
-        });
-        return transactions;
+        return transactionRepository.findAll()
+                .stream()
+                .map(transactionMapper::entityToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public TransactionDto getTransactionById(Long id) {
-        Transaction transaction = transactionRepository.findById(id).orElse(null);
-        return transactionMapper.entityToDto(transaction);
+        return transactionRepository.findById(id)
+                .map(transactionMapper::entityToDto)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
@@ -44,12 +43,14 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionDto updateTransaction(Long id, TransactionDto transaction) {
-        Transaction current = transactionRepository.findById(id).orElse(null);
-        Transaction update = transactionMapper.dtoToEntity(transaction);
-        BeanUtils.copyProperties(update, current, "id");
-        Transaction output = transactionRepository.save(current);
-        return transactionMapper.entityToDto(output);
+    public TransactionDto updateTransaction(Long id, TransactionDto update) {
+        return transactionRepository.findById(id)
+                .map(existing -> {
+                    transactionMapper.updateEntityFromDto(update, existing);
+                    return transactionRepository.save(existing);
+                })
+                .map(transactionMapper::entityToDto)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override

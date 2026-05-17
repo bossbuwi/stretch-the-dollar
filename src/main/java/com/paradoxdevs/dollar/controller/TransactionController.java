@@ -5,6 +5,7 @@ import com.paradoxdevs.dollar.api.response.TransactionResponse;
 import com.paradoxdevs.dollar.mapper.TransactionMapper;
 import com.paradoxdevs.dollar.model.TransactionDto;
 import com.paradoxdevs.dollar.service.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -42,14 +42,14 @@ public class TransactionController {
         return response;
     }
 
-    @GetMapping("/")
-    public TransactionResponse getTransaction(@RequestParam("id") long id) {
+    @GetMapping("/{id}")
+    public TransactionResponse getTransaction(@PathVariable Long id) {
         TransactionDto transactionDto = transactionService.getTransactionById(id);
         return transactionMapper.dtoToResponse(transactionDto);
     }
 
     @PostMapping("/")
-    public TransactionResponse createTransaction(@RequestBody TransactionRequest request) {
+    public TransactionResponse createTransaction(@RequestBody @Valid TransactionRequest request) {
         TransactionDto dto = transactionService.addTransaction(transactionMapper.requestToDto(request));
         return transactionMapper.dtoToResponse(dto);
     }

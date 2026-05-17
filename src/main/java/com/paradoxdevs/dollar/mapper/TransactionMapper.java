@@ -6,6 +6,7 @@ import com.paradoxdevs.dollar.entity.Transaction;
 import com.paradoxdevs.dollar.model.TransactionDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel="spring")
 public interface TransactionMapper {
@@ -22,4 +23,7 @@ public interface TransactionMapper {
 
     @Mapping(target="transactionId", ignore=true)
     TransactionDto requestToDto(TransactionRequest transactionRequest);
+
+    @Mapping(target = "name", source = "transactionName")
+    void updateEntityFromDto(TransactionDto transactionDto, @MappingTarget Transaction transaction);
 }
