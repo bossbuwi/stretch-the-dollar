@@ -1,5 +1,6 @@
 package com.paradoxdevs.dollar.service;
 
+import com.paradoxdevs.dollar.aspect.DatabaseExecution;
 import com.paradoxdevs.dollar.entity.Transaction;
 import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionMapper;
@@ -20,6 +21,7 @@ public class TransactionServiceImpl implements TransactionService {
         this.transactionMapper = transactionMapper;
     }
 
+    @DatabaseExecution("Get all transactions.")
     @Override
     public List<TransactionDto> getTransactions() {
         return transactionRepository.findAll()
@@ -28,6 +30,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .collect(Collectors.toList());
     }
 
+    @DatabaseExecution("Get specific transaction by ID.")
     @Override
     public TransactionDto getTransactionById(Long id) {
         return transactionRepository.findById(id)
@@ -35,6 +38,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
+    @DatabaseExecution("Add new transaction.")
     @Override
     public TransactionDto addTransaction(TransactionDto transactionDto) {
         Transaction input = transactionMapper.dtoToEntity(transactionDto);
@@ -42,6 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionMapper.entityToDto(output);
     }
 
+    @DatabaseExecution("Update an existing transaction.")
     @Override
     public TransactionDto updateTransaction(Long id, TransactionDto update) {
         return transactionRepository.findById(id)
@@ -53,6 +58,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
+    @DatabaseExecution("Delete an existing transaction.")
     @Override
     public void deleteTransaction(long id) {
         transactionRepository.deleteById(id);

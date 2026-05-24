@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum ErrorCode {
     REQUEST_VALIDATION_ERROR(100, "Request validation failed."),
     RESOURCE_NOT_FOUND(101, "Resource not found."),
+    MALFORMED_REQUEST(102, "Malformed JSON request, please check your syntax."),
     INTERNAL_SERVER_ERROR(999, "Internal server error."),;
 
     private final int code;
