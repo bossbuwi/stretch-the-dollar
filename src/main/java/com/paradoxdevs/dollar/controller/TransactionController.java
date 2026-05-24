@@ -6,6 +6,7 @@ import com.paradoxdevs.dollar.mapper.TransactionMapper;
 import com.paradoxdevs.dollar.model.TransactionDto;
 import com.paradoxdevs.dollar.service.TransactionService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/transaction")
 public class TransactionController {
@@ -50,12 +52,14 @@ public class TransactionController {
 
     @PostMapping("/")
     public TransactionResponse createTransaction(@RequestBody @Valid TransactionRequest request) {
+        log.info(request.toString());
         TransactionDto dto = transactionService.addTransaction(transactionMapper.requestToDto(request));
         return transactionMapper.dtoToResponse(dto);
     }
 
     @PutMapping("/{id}")
     public TransactionResponse updateTransaction(@PathVariable Long id, @RequestBody TransactionRequest request) {
+        log.info(request.toString());
         TransactionDto dto = transactionService.updateTransaction(id, transactionMapper.requestToDto(request));
         return transactionMapper.dtoToResponse(dto);
     }
