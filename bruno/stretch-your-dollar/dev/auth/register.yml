@@ -1,0 +1,22 @@
+info:
+  name: register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080/auth/register
+  body:
+    type: json
+    data: |-
+      {
+        "username": "admin",
+        "password": "1234"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
