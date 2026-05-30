@@ -2,11 +2,10 @@ package com.paradoxdevs.dollar.controller;
 
 import com.paradoxdevs.dollar.api.request.TransactionRequest;
 import com.paradoxdevs.dollar.api.response.TransactionResponse;
-import com.paradoxdevs.dollar.mapper.TransactionMapper;
-import com.paradoxdevs.dollar.model.TransactionDto;
 import com.paradoxdevs.dollar.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -24,48 +22,37 @@ import java.util.List;
 @RequestMapping("/transaction")
 public class TransactionController {
     private final TransactionService transactionService;
-    private final TransactionMapper transactionMapper;
 
-    public TransactionController(TransactionService transactionService, TransactionMapper transactionMapper) {
+    public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
-        this.transactionMapper = transactionMapper;
     }
 
     @GetMapping("/index")
-    public List<TransactionResponse> getTransactions() {
-        List<TransactionResponse> response = new ArrayList<>();
-
-        List<TransactionDto> transactions = transactionService.getTransactions();
-        for (TransactionDto transactionDto : transactions) {
-            TransactionResponse transactionResponse = transactionMapper.dtoToResponse(transactionDto);
-            response.add(transactionResponse);
-        }
-
-        return response;
+    public ResponseEntity<List<TransactionResponse>> getTransactions() {
+        return ResponseEntity.ok(transactionService.getTransactions());
     }
 
     @GetMapping("/{id}")
-    public TransactionResponse getTransaction(@PathVariable Long id) {
-        TransactionDto transactionDto = transactionService.getTransactionById(id);
-        return transactionMapper.dtoToResponse(transactionDto);
+    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable Long id) {
+        return ResponseEntity.ok(transactionService.getTransactionById(id));
     }
 
     @PostMapping("/")
-    public TransactionResponse createTransaction(@RequestBody @Valid TransactionRequest request) {
+    public ResponseEntity<TransactionResponse> createTransaction(@RequestBody @Valid TransactionRequest request) {
         log.info(request.toString());
-        TransactionDto dto = transactionService.addTransaction(transactionMapper.requestToDto(request));
-        return transactionMapper.dtoToResponse(dto);
+        return ResponseEntity.ok(transactionService.addTransaction(request));
     }
 
     @PutMapping("/{id}")
-    public TransactionResponse updateTransaction(@PathVariable Long id, @RequestBody TransactionRequest request) {
+    public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable Long id,
+                                                                 @RequestBody @Valid TransactionRequest request) {
         log.info(request.toString());
-        TransactionDto dto = transactionService.updateTransaction(id, transactionMapper.requestToDto(request));
-        return transactionMapper.dtoToResponse(dto);
+        return ResponseEntity.ok(transactionService.updateTransaction(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTransaction(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
         transactionService.deleteTransaction(id);
+        return ResponseEntity.noContent().build();
     }
 }

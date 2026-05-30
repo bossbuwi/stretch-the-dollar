@@ -1,13 +1,14 @@
 package com.paradoxdevs.dollar.service;
 
-import com.paradoxdevs.dollar.model.TransactionDto;
+import com.paradoxdevs.dollar.api.request.TransactionRequest;
+import com.paradoxdevs.dollar.api.response.TransactionResponse;
 
 import java.util.List;
 
 public interface TransactionService {
-    List<TransactionDto> getTransactions();
-    TransactionDto getTransactionById(Long id);
-    TransactionDto addTransaction(TransactionDto transaction);
-    TransactionDto updateTransaction(Long id, TransactionDto transaction);
+    List<TransactionResponse> getTransactions();
+    TransactionResponse getTransactionById(Long id);
+    TransactionResponse addTransaction(TransactionRequest request);
+    TransactionResponse updateTransaction(Long id, TransactionRequest request);
     void deleteTransaction(long id);
 }
