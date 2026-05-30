@@ -1,0 +1,29 @@
+info:
+  name: login
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8080/auth/login
+  body:
+    type: json
+    data: |-
+      {
+        "username": "admin",
+        "password": "1234"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        let data = res.body;
+        bru.setVar("token", data.token);
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

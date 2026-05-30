@@ -23,7 +23,7 @@ public class DollarApplication {
 	}
 
 	private static boolean isPostgresAvailable() {
-		try (Socket ignored = new Socket("localhost", 54322)) {
+		try (Socket ignored = new Socket("127.0.0.1", 54322)) {
 			return true;
 		} catch (Exception e) {
 			return false;
