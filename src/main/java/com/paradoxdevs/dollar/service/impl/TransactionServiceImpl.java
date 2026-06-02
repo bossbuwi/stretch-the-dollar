@@ -63,6 +63,9 @@ public class TransactionServiceImpl implements TransactionService {
     @DatabaseExecution("Delete an existing transaction.")
     @Override
     public void deleteTransaction(long id) {
+        // TODO: Find a way to enable this method to
+        //  throw an exception if the provided id
+        //  does not exist.
         transactionRepository.deleteById(id);
     }
 }
