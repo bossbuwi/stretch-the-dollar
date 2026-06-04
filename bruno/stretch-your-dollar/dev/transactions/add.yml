@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8080/transaction/
+  url: http://localhost:{{port}}/transaction/
   body:
     type: json
     data: |-

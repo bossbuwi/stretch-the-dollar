@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8080/auth/register
+  url: http://localhost:{{port}}/auth/register
   body:
     type: json
     data: |-

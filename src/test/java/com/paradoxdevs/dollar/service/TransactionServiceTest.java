@@ -11,8 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
@@ -20,14 +22,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.paradoxdevs.dollar.exception.ErrorCode.RESOURCE_NOT_FOUND;
-import static com.paradoxdevs.dollar.helper.TransactionDataHelper.createValidTransaction;
-import static com.paradoxdevs.dollar.helper.TransactionDataHelper.createValidTransactionRequest;
-import static com.paradoxdevs.dollar.helper.TransactionDataHelper.createValidTransactionResponse;
+import static com.paradoxdevs.dollar.helper.TransactionDataHelper.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -41,8 +40,8 @@ import static org.mockito.Mockito.when;
 public class TransactionServiceTest {
     @Mock
     private TransactionRepository transactionRepository;
-    @Mock
-    private TransactionMapper transactionMapper;
+    @Spy
+    private TransactionMapper transactionMapper = Mappers.getMapper(TransactionMapper.class);
     @InjectMocks
     private TransactionServiceImpl transactionService;
 
@@ -51,33 +50,26 @@ public class TransactionServiceTest {
     class GetTransactionsTests {
 
         @Test
-        @DisplayName("Database is not empty")
+        @DisplayName("Database is not empty.")
         void shouldReturnAllTransactions() {
-            Transaction t1 = new Transaction();
-            t1.setId(1L);
-            TransactionResponse r1 = new TransactionResponse();
-            Transaction t2 = new Transaction();
-            t2.setId(2L);
-            TransactionResponse r2 = new TransactionResponse();
+            Transaction t1 = createValidTransaction();
+            Transaction t2 = createValidTransaction();
+            long t2Id = 2L;
+            t2.setId(t2Id);
 
             when(transactionRepository.findAll()).thenReturn(List.of(t1, t2));
-            when(transactionMapper.entityToResponse(t1)).thenReturn(r1);
-            when(transactionMapper.entityToResponse(t2)).thenReturn(r2);
 
             List<TransactionResponse> result = transactionService.getTransactions();
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            assertSame(r1, result.get(0));
-            assertSame(r2, result.get(1));
-
             verify(transactionRepository, times(1)).findAll();
             verify(transactionMapper, times(1)).entityToResponse(t1);
             verify(transactionMapper, times(1)).entityToResponse(t2);
         }
 
         @Test
-        @DisplayName("Database is empty")
+        @DisplayName("Database is empty.")
         void shouldReturnEmptyListWhenNoTransactionsFound() {
             when(transactionRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -85,13 +77,12 @@ public class TransactionServiceTest {
 
             assertNotNull(result);
             assertEquals(0, result.size());
-
             verify(transactionRepository, times(1)).findAll();
             verifyNoInteractions(transactionMapper);
         }
 
         @Test
-        @DisplayName("Should propagate runtime exception when repository fails")
+        @DisplayName("Should propagate runtime exception when repository fails.")
         void shouldPropagateExceptionWhenRepositoryThrows() {
             RuntimeException databaseException = new RuntimeException("Database connection timed out");
             when(transactionRepository.findAll()).thenThrow(databaseException);
@@ -99,7 +90,6 @@ public class TransactionServiceTest {
             RuntimeException exception = assertThrows(RuntimeException.class, () -> transactionService.getTransactions());
 
             assertEquals("Database connection timed out", exception.getMessage());
-
             verify(transactionRepository, times(1)).findAll();
             verifyNoInteractions(transactionMapper);
         }
@@ -110,24 +100,22 @@ public class TransactionServiceTest {
     class GetTransactionByIdTests {
 
         @Test
-        @DisplayName("Transaction with id exists")
+        @DisplayName("Transaction with id exists.")
         void shouldReturnTransactionById() {
-            Transaction t1 = new Transaction();
-            t1.setId(1L);
-            TransactionResponse r1 = new TransactionResponse();
+            Transaction t1 = createValidTransaction();
 
             when(transactionRepository.findById(1L)).thenReturn(Optional.of(t1));
-            when(transactionMapper.entityToResponse(t1)).thenReturn(r1);
 
             TransactionResponse result = transactionService.getTransactionById(1L);
 
-            assertSame(r1, result);
+            assertNotNull(result);
+            assertEquals(ID, result.getTransactionId());
             verify(transactionRepository, times(1)).findById(1L);
             verify(transactionMapper, times(1)).entityToResponse(t1);
         }
 
         @Test
-        @DisplayName("Transaction with id does not exist")
+        @DisplayName("Transaction with id does not exist.")
         void shouldReturnExceptionWhenTransactionNotFound() {
             when(transactionRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -140,7 +128,7 @@ public class TransactionServiceTest {
         }
 
         @Test
-        @DisplayName("Should propagate runtime exception when repository fails")
+        @DisplayName("Should propagate runtime exception when repository fails.")
         void shouldPropagateExceptionWhenRepositoryThrows() {
             RuntimeException databaseException = new RuntimeException("Database connection timed out");
             when(transactionRepository.findById(1L)).thenThrow(databaseException);
@@ -148,7 +136,6 @@ public class TransactionServiceTest {
             RuntimeException exception = assertThrows(RuntimeException.class, () -> transactionService.getTransactionById(1L));
 
             assertEquals("Database connection timed out", exception.getMessage());
-
             verify(transactionRepository, times(1)).findById(1L);
             verifyNoInteractions(transactionMapper);
         }
@@ -159,26 +146,26 @@ public class TransactionServiceTest {
     class AddTransactionTests {
 
         @Test
-        @DisplayName("Save valid transaction")
+        @DisplayName("Save valid transaction.")
         void shouldSaveTransaction() {
             TransactionRequest req = createValidTransactionRequest();
-            TransactionResponse res = createValidTransactionResponse();
-            Transaction t1 = createValidTransaction();
+            Transaction in = createValidTransaction();
+            in.setId(null);
+            Transaction out = createValidTransaction();
 
-            when(transactionMapper.requestToEntity(req)).thenReturn(t1);
-            when(transactionRepository.save(t1)).thenReturn(t1);
-            when(transactionMapper.entityToResponse(t1)).thenReturn(res);
+            when(transactionRepository.save(in)).thenReturn(out);
 
             TransactionResponse result = transactionService.addTransaction(req);
 
-            assertSame(res, result);
-            verify(transactionRepository, times(1)).save(t1);
+            assertNotNull(result);
+            assertEquals(ID, result.getTransactionId());
+            verify(transactionRepository, times(1)).save(in);
             verify(transactionMapper, times(1)).requestToEntity(req);
-            verify(transactionMapper, times(1)).entityToResponse(t1);
+            verify(transactionMapper, times(1)).entityToResponse(out);
         }
 
         @Test
-        @DisplayName("Should propagate runtime exception when repository fails")
+        @DisplayName("Should propagate runtime exception when repository fails.")
         void shouldPropagateExceptionWhenRepositoryThrows() {
             RuntimeException databaseException = new RuntimeException("Database connection timed out");
             when(transactionRepository.save(any())).thenThrow(databaseException);
@@ -186,7 +173,6 @@ public class TransactionServiceTest {
             RuntimeException exception = assertThrows(RuntimeException.class, () -> transactionService.addTransaction(any()));
 
             assertEquals("Database connection timed out", exception.getMessage());
-
             verify(transactionRepository, times(1)).save(any());
             verify(transactionMapper, times(1)).requestToEntity(any());
             verifyNoMoreInteractions(transactionMapper);
@@ -198,11 +184,66 @@ public class TransactionServiceTest {
     class UpdateTransactionTests {
 
         @Test
-        @DisplayName("Update valid transaction")
+        @DisplayName("Update valid transaction.")
         void shouldUpdateTransaction() {
+            // Create request and update the description
             long updateId = 1L;
             TransactionRequest req = createValidTransactionRequest();
+            String newDescription = "new description";
+            req.setDescription(newDescription);
+
+            // This is the existing transaction
+            Transaction t1 = createValidTransaction();
+            // This is the new transaction after the update
+            Transaction t2 = createValidTransaction();
+            t2.setDescription(newDescription);
+
+            when(transactionRepository.findById(1L)).thenReturn(Optional.of(t1));
+            when(transactionRepository.save(any())).thenReturn(t2);
+
+            TransactionResponse result = transactionService.updateTransaction(updateId, req);
+
+            assertNotNull(result);
+            assertEquals(newDescription, result.getDescription());
+            assertEquals(updateId, result.getTransactionId());
+            verify(transactionRepository, times(1)).findById(1L);
+            verify(transactionMapper, times(1)).updateEntityFromRequest(req, t1);
+            verify(transactionRepository, times(1)).save(t2);
+            verify(transactionMapper, times(1)).entityToResponse(t2);
         }
+
+        @Test
+        @DisplayName("Throw exception if transaction is not found.")
+        void shouldThrowIfTransactionNotFound() {
+            long updateId = 1L;
+            TransactionRequest req = createValidTransactionRequest();
+            String newDescription = "new description";
+            req.setDescription(newDescription);
+
+            when(transactionRepository.findById(1L)).thenThrow(new ResourceNotFoundException());
+
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                    () -> transactionService.updateTransaction(updateId, req));
+
+            assertEquals(RESOURCE_NOT_FOUND.getErrorMessage(), exception.getMessage());
+            verify(transactionRepository, times(1)).findById(1L);
+            verifyNoInteractions(transactionMapper);
+        }
+
+        @Test
+        @DisplayName("Should propagate runtime exception when repository fails.")
+        void shouldPropagateExceptionWhenRepositoryThrows() {
+            RuntimeException databaseException = new RuntimeException("Database connection timed out");
+            when(transactionRepository.findById(any())).thenThrow(databaseException);
+
+            RuntimeException exception = assertThrows(RuntimeException.class,
+                    () -> transactionService.updateTransaction(null, null));
+
+            assertEquals("Database connection timed out", exception.getMessage());
+            verify(transactionRepository, times(1)).findById(any());
+            verifyNoInteractions(transactionMapper);
+        }
+
     }
 
     @Nested
@@ -210,7 +251,7 @@ public class TransactionServiceTest {
     class DeleteTransactionTests {
 
         @Test
-        @DisplayName("Delete transaction when available")
+        @DisplayName("Delete transaction when available.")
         void shouldDeleteTransaction() {
             long deleteId = 1L;
 
@@ -220,16 +261,16 @@ public class TransactionServiceTest {
         }
 
         @Test
-        @DisplayName("Should propagate runtime exception when repository fails")
+        @DisplayName("Should propagate runtime exception when repository fails.")
         void shouldPropagateExceptionWhenRepositoryThrows() {
             long deleteId = 1L;
             RuntimeException databaseException = new RuntimeException("Database connection timed out");
             doThrow(databaseException).when(transactionRepository).deleteById(deleteId);
 
-            RuntimeException exception = assertThrows(RuntimeException.class, () -> transactionService.deleteTransaction(deleteId));
+            RuntimeException exception = assertThrows(RuntimeException.class,
+                    () -> transactionService.deleteTransaction(deleteId));
 
             assertEquals("Database connection timed out", exception.getMessage());
-
             verify(transactionRepository, times(1)).deleteById(deleteId);
             verifyNoInteractions(transactionMapper);
         }

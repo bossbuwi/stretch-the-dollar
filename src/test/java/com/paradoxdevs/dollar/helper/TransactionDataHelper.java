@@ -1,7 +1,6 @@
 package com.paradoxdevs.dollar.helper;
 
 import com.paradoxdevs.dollar.api.request.TransactionRequest;
-import com.paradoxdevs.dollar.api.response.TransactionResponse;
 import com.paradoxdevs.dollar.entity.Transaction;
 
 public final class TransactionDataHelper {
@@ -14,17 +13,6 @@ public final class TransactionDataHelper {
 
     public static TransactionRequest createValidTransactionRequest() {
         return TransactionRequest.builder()
-                .transactionName(NAME)
-                .description(DESCRIPTION)
-                .transactionType(TYPE)
-                .amount(AMOUNT)
-                .currency(CURRENCY)
-                .build();
-    }
-
-    public static TransactionResponse createValidTransactionResponse() {
-        return TransactionResponse.builder()
-                .transactionId(ID)
                 .transactionName(NAME)
                 .description(DESCRIPTION)
                 .transactionType(TYPE)
