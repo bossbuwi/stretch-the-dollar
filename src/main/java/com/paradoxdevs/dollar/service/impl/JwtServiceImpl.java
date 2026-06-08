@@ -77,14 +77,7 @@ public class JwtServiceImpl implements JwtService {
      * Checks if the token has passed its expiration date
      */
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date(clock.millis()));
-    }
-
-    /**
-     * Extracts the expiration date from the token
-     */
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 
     /**
