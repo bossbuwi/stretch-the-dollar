@@ -33,7 +33,7 @@ Also note that everything on this guide needs to be done while on SteamDeck's de
 1. Download the appropriate package from here [Azul JDK](https://www.azul.com/downloads/?package=jdk#zulu).For the SteamDeck, it should be Linux x86 64-bit. Choose the ZIP file option.
 2. Extract the contents somewhere and note the directory.
 3. Open file `.bashrc` on `~` (this is the Deck's home directory)
-4. Add `export JAVA_HOME=directory/from/step2`
+4. Add `export JAVA_HOME=/directory/from/step2`
 5. Add `export PATH=$PATH:$JAVA_HOME/bin` below it.
 6. Save the file and restart the console.
 7. Run `java -version`. If the setup is correct, the Java version should be returned.
