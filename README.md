@@ -111,8 +111,7 @@ supabase     x86_64    0:2.106.0-1     @commandline      199.2 MiB
 14. It will then ask if it is okay to download additional packages. Of course, say yes with `Y` Don't just hit enter because `N` is the default response.
 15. It will commence the downloads and once it says _Complete!_ , then the setup is done.
 16. Enter `supabase -v` to check if the process completed successfully.  
-If everything is fine, a version number should be returned. If not, then good luck troubleshooting what went wrong.  
-Or just restart from Step 1.
+If everything is fine, a version number should be returned. If not, then good luck troubleshooting what went wrong. Or just restart from Step 1.  
 Note: At this point, the installer (rpm file) can be deleted.
 
 ### How to start the Supabase CLI
