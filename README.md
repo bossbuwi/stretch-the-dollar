@@ -75,3 +75,51 @@ whatever you choose, the next step is:
 6. Add `export PATH=$PATH:$M2_HOME/bin` below it.
 7. Restart the console and enter `mvn -v`
 8. If Maven is successfully installed, then the version number should be returned.
+
+### Installing Bruno
+1. Download [Bruno](https://www.usebruno.com/downloads)
+2. Select Linux and the `Linux AppImage x86_64` option.
+3. Save the downloaded file somewhere. Again, please remember the directory.
+4. Go to the directory and double-click the appimage.
+5. That's it!
+
+### Installing Supabase CLI
+**Note:**   
+This is a bit tedious, but I can't find an easier way to make Supabase CLI work on the SteamDeck.
+
+1. Get a glass of water and some snacks, then take a deep breath.
+2. Open the console and double check if distrobox is indeed installed on the SteamDeck by `distrobox version`.    
+If it is installed, a version number should be returned. If not, then **UPDATE THE STEAMOS** until the command works.
+3. Once distrobox is working, check podman availability by `podman -v`.   
+If it is installed, a version number should be returned. If not, then **UPDATE THE STEAMOS** until the command works.
+4. Once both distrobox and podman are available, create a new Fedora distrobox with `distrobox create --name fedora-box --image fedora:latest`
+5. If prompted to do anything, just enter `Y`. You can't proceed with the creation otherwise.  
+This is 100% safe. Will an established name like distrobox do malicious things to your system? Probably not!
+6. The creation process is done once it says _Distrobox 'fedora-box' successfully created._
+7. To enter the newly created box, use `distrobox enter fedora-box`
+8. It will do a quick setup and the process is done once it says _Container Setup Complete!_
+9. If you enter `pwd`, you'll notice that the command line is at the Deck's home directory. Take note of that for now. **AND DON'T CLOSE THE CONSOLE JUST YET!**
+10. Open your browser and download the latest non-beta release (or even a beta if you like living dangerously) of [Supabase CLI](https://github.com/supabase/cli).  
+Pick the file with `linux_amd64.rpm` extension. Note the directory where the file is downloaded.
+11. Go back to the console from Step 9. Navigate to the directory where the rpm file has been downloaded.
+12. Once on the file's directory, install it with `sudo dnf install filename.rpm`
+13. It will update and load repositories then show what is actually being installed.  
+```
+Package      Arch      Version         Repository             Size
+supabase     x86_64    0:2.106.0-1     @commandline      199.2 MiB
+```
+14. It will then ask if it is okay to download additional packages. Of course, say yes with `Y` Don't just hit enter because `N` is the default response.
+15. It will commence the downloads and once it says _Complete!_ , then the setup is done.
+16. Enter `supabase -v` to check if the process completed successfully.  
+If everything is fine, a version number should be returned. If not, then good luck troubleshooting what went wrong.  
+Or just restart from Step 1.
+Note: At this point, the installer (rpm file) can be deleted.
+
+### How to start the Supabase CLI
+1. Enter the box with `distobox enter fedora-box`   
+Replace _fedora-box_ with the name used during the box creation. This guide assumes _fedora-box_ is used.  
+Note: All commands after this step are executed inside the box. The console is inside the box if there is a box icon at the command line.
+2. Navigate to the project directory and start supabase with `supabase start`
+3. If an error regarding Unix container or podman shows, enter the command `export DOCKER_HOST="unix:///run/user/1000/podman/podman.sock"`
+4. Repeat Step 2.
+5. Supabase CLI should now start.
