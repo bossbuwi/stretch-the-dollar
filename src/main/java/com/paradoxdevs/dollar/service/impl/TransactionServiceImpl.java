@@ -1,11 +1,13 @@
-package com.paradoxdevs.dollar.service;
+package com.paradoxdevs.dollar.service.impl;
 
+import com.paradoxdevs.dollar.api.request.TransactionRequest;
+import com.paradoxdevs.dollar.api.response.TransactionResponse;
 import com.paradoxdevs.dollar.aspect.DatabaseExecution;
 import com.paradoxdevs.dollar.entity.Transaction;
 import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionMapper;
-import com.paradoxdevs.dollar.model.TransactionDto;
 import com.paradoxdevs.dollar.repository.TransactionRepository;
+import com.paradoxdevs.dollar.service.TransactionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,44 +25,47 @@ public class TransactionServiceImpl implements TransactionService {
 
     @DatabaseExecution("Get all transactions.")
     @Override
-    public List<TransactionDto> getTransactions() {
+    public List<TransactionResponse> getTransactions() {
         return transactionRepository.findAll()
                 .stream()
-                .map(transactionMapper::entityToDto)
+                .map(transactionMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
 
     @DatabaseExecution("Get specific transaction by ID.")
     @Override
-    public TransactionDto getTransactionById(Long id) {
+    public TransactionResponse getTransactionById(Long id) {
         return transactionRepository.findById(id)
-                .map(transactionMapper::entityToDto)
+                .map(transactionMapper::entityToResponse)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
     @DatabaseExecution("Add new transaction.")
     @Override
-    public TransactionDto addTransaction(TransactionDto transactionDto) {
-        Transaction input = transactionMapper.dtoToEntity(transactionDto);
+    public TransactionResponse addTransaction(TransactionRequest request) {
+        Transaction input = transactionMapper.requestToEntity(request);
         Transaction output = transactionRepository.save(input);
-        return transactionMapper.entityToDto(output);
+        return transactionMapper.entityToResponse(output);
     }
 
     @DatabaseExecution("Update an existing transaction.")
     @Override
-    public TransactionDto updateTransaction(Long id, TransactionDto update) {
+    public TransactionResponse updateTransaction(Long id, TransactionRequest request) {
         return transactionRepository.findById(id)
                 .map(existing -> {
-                    transactionMapper.updateEntityFromDto(update, existing);
+                    transactionMapper.updateEntityFromRequest(request, existing);
                     return transactionRepository.save(existing);
                 })
-                .map(transactionMapper::entityToDto)
+                .map(transactionMapper::entityToResponse)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
     @DatabaseExecution("Delete an existing transaction.")
     @Override
     public void deleteTransaction(long id) {
+        // TODO: Find a way to enable this method to
+        //  throw an exception if the provided id
+        //  does not exist.
         transactionRepository.deleteById(id);
     }
 }

@@ -11,15 +11,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Clock;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.paradoxdevs.dollar.constant.AppConstants.EXPIRATION_TIME;
+
 @Slf4j
 @Service
 public class JwtServiceImpl implements JwtService {
     private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+    private final Clock clock;
+
+    public JwtServiceImpl(Clock clock) {
+        this.clock = clock;
+    }
 
     /**
      * Extracts the username (subject) from the token
@@ -47,11 +55,12 @@ public class JwtServiceImpl implements JwtService {
      * Generates a token with extra claims (like roles or custom data)
      */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        long now = clock.millis();
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24))) // 24 hours
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + EXPIRATION_TIME))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -68,14 +77,7 @@ public class JwtServiceImpl implements JwtService {
      * Checks if the token has passed its expiration date
      */
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    /**
-     * Extracts the expiration date from the token
-     */
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 
     /**
@@ -84,6 +86,7 @@ public class JwtServiceImpl implements JwtService {
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
+                .setClock(() -> new Date(clock.millis()))
                 .setSigningKey(getSignInKey())
                 .build()
                 .parseClaimsJws(token)

@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: http://localhost:8080/transaction/1
+  url: http://localhost:{{port}}/transaction/1
   auth: inherit
 
 settings:

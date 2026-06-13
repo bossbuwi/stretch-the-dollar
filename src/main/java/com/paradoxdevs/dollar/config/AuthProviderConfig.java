@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static com.paradoxdevs.dollar.exception.ErrorCode.RESOURCE_NOT_FOUND;
+
 @Configuration
 public class AuthProviderConfig {
     private final UserRepository repository;
@@ -23,7 +25,7 @@ public class AuthProviderConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> repository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException(RESOURCE_NOT_FOUND.getErrorMessage()));
     }
 
     @Bean
