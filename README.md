@@ -122,3 +122,19 @@ Note: All commands after this step are executed inside the box. The console is i
 3. If an error regarding Unix container or podman shows, enter the command `export DOCKER_HOST="unix:///run/user/1000/podman/podman.sock"`
 4. Repeat Step 2.
 5. Supabase CLI should now start.
+
+### Setting up a custom port
+Note:  
+By default, Spring Boot attempts to start the app on port 8080. But, the SteamDeck uses port 8080 while the Steam app is running.  
+This prevents the app from starting due to the port conflict.  
+The Steam app can be stopped, but it isn't really a **Steam**Deck without **Steam** right?
+
+1. Duplicate the `application.properties` file inside `src/main/resources`.
+2. Rename the new file `application-local.properties`.
+3. Modify the `server.port` on the local properties file to an unused port, e.g. 8085.
+4. Open `Run | Edit Configurations..`.
+5. Select the Spring Boot app config.
+6. Click the `Modify options` and tick the `Program arguments` item. A new text box should appear.
+7. On the new text box, add `--spring.profiles.active=local`.
+8. Click `Apply` then `OK`.
+9. Start the app and check on the logs if the port used is indeed the one set on the local properties file.
