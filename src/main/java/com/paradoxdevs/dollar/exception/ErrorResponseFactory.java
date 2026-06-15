@@ -82,6 +82,9 @@ public class ErrorResponseFactory {
                                                               String customMessage,
                                                               List<String> fieldErrors,
                                                               Object[] args) {
+        // TODO: Incorrect log. This does not incorporate the args.
+        //  It results in the generic %s message on logs.
+        //  Figure out the correct sequence.
         log.error(code.getErrorMessage());
         String finalMessage = Optional.ofNullable(customMessage).filter(msg -> !msg.isBlank()).orElseGet(() -> code.formatMessage(args));
         ArrayList<String> finalFieldErrors = Optional.ofNullable(fieldErrors)
