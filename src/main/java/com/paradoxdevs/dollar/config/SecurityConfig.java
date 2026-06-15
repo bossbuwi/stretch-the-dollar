@@ -17,7 +17,7 @@ import static com.paradoxdevs.dollar.constant.AppConstants.AUTH_ROUTES;
 import static com.paradoxdevs.dollar.constant.AppConstants.H2_CONSOLE;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;

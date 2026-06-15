@@ -2,7 +2,7 @@ package com.paradoxdevs.dollar.service.impl;
 
 import com.paradoxdevs.dollar.api.request.TransactionRequest;
 import com.paradoxdevs.dollar.api.response.TransactionResponse;
-import com.paradoxdevs.dollar.aspect.DatabaseExecution;
+import com.paradoxdevs.dollar.aspect.annotation.PerformanceMetrics;
 import com.paradoxdevs.dollar.entity.Transaction;
 import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionMapper;
@@ -23,7 +23,7 @@ public class TransactionServiceImpl implements TransactionService {
         this.transactionMapper = transactionMapper;
     }
 
-    @DatabaseExecution("Get all transactions.")
+    @PerformanceMetrics
     @Override
     public List<TransactionResponse> getTransactions() {
         return transactionRepository.findAll()
@@ -32,7 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .collect(Collectors.toList());
     }
 
-    @DatabaseExecution("Get specific transaction by ID.")
+    @PerformanceMetrics
     @Override
     public TransactionResponse getTransactionById(Long id) {
         return transactionRepository.findById(id)
@@ -40,7 +40,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
-    @DatabaseExecution("Add new transaction.")
+    @PerformanceMetrics
     @Override
     public TransactionResponse addTransaction(TransactionRequest request) {
         Transaction input = transactionMapper.requestToEntity(request);
@@ -48,7 +48,7 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionMapper.entityToResponse(output);
     }
 
-    @DatabaseExecution("Update an existing transaction.")
+    @PerformanceMetrics
     @Override
     public TransactionResponse updateTransaction(Long id, TransactionRequest request) {
         return transactionRepository.findById(id)
@@ -60,7 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
-    @DatabaseExecution("Delete an existing transaction.")
+    @PerformanceMetrics
     @Override
     public void deleteTransaction(long id) {
         // TODO: Find a way to enable this method to
