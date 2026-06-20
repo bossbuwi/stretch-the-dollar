@@ -115,7 +115,7 @@ If everything is fine, a version number should be returned. If not, then good lu
 Note: At this point, the installer (rpm file) can be deleted.
 
 ### How to start the Supabase CLI
-1. Enter the box with `distobox enter fedora-box`   
+1. Enter the box with `distrobox enter fedora-box`   
 Replace _fedora-box_ with the name used during the box creation. This guide assumes _fedora-box_ is used.  
 Note: All commands after this step are executed inside the box. The console is inside the box if there is a box icon at the command line.
 2. Navigate to the project directory and start supabase with `supabase start`

@@ -3,9 +3,11 @@ package com.paradoxdevs.dollar.service;
 import com.paradoxdevs.dollar.api.request.TransactionRequest;
 import com.paradoxdevs.dollar.api.response.TransactionResponse;
 import com.paradoxdevs.dollar.entity.Transaction;
+import com.paradoxdevs.dollar.entity.TransactionWithUsername;
 import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionMapper;
 import com.paradoxdevs.dollar.repository.TransactionRepository;
+import com.paradoxdevs.dollar.repository.TransactionWithUsernameRepository;
 import com.paradoxdevs.dollar.service.impl.TransactionServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,6 +42,8 @@ import static org.mockito.Mockito.when;
 public class TransactionServiceTest {
     @Mock
     private TransactionRepository transactionRepository;
+    @Mock
+    private TransactionWithUsernameRepository transactionWithUsernameRepository;
     @Spy
     private TransactionMapper transactionMapper = Mappers.getMapper(TransactionMapper.class);
     @InjectMocks
@@ -52,32 +56,32 @@ public class TransactionServiceTest {
         @Test
         @DisplayName("Database is not empty.")
         void shouldReturnAllTransactions() {
-            Transaction t1 = createValidTransaction();
-            Transaction t2 = createValidTransaction();
+            TransactionWithUsername t1 = createValidTransactionWithUsername();
+            TransactionWithUsername t2 = createValidTransactionWithUsername();
             long t2Id = 2L;
             t2.setId(t2Id);
 
-            when(transactionRepository.findAll()).thenReturn(List.of(t1, t2));
+            when(transactionWithUsernameRepository.findAll()).thenReturn(List.of(t1, t2));
 
             List<TransactionResponse> result = transactionService.getTransactions();
 
             assertNotNull(result);
             assertEquals(2, result.size());
-            verify(transactionRepository, times(1)).findAll();
-            verify(transactionMapper, times(1)).entityToResponse(t1);
-            verify(transactionMapper, times(1)).entityToResponse(t2);
+            verify(transactionWithUsernameRepository, times(1)).findAll();
+            verify(transactionMapper, times(1)).entityWithUsernameToResponse(t1);
+            verify(transactionMapper, times(1)).entityWithUsernameToResponse(t2);
         }
 
         @Test
         @DisplayName("Database is empty.")
         void shouldReturnEmptyListWhenNoTransactionsFound() {
-            when(transactionRepository.findAll()).thenReturn(Collections.emptyList());
+            when(transactionWithUsernameRepository.findAll()).thenReturn(Collections.emptyList());
 
             List<TransactionResponse> result = transactionService.getTransactions();
 
             assertNotNull(result);
             assertEquals(0, result.size());
-            verify(transactionRepository, times(1)).findAll();
+            verify(transactionWithUsernameRepository, times(1)).findAll();
             verifyNoInteractions(transactionMapper);
         }
 
@@ -85,12 +89,12 @@ public class TransactionServiceTest {
         @DisplayName("Should propagate runtime exception when repository fails.")
         void shouldPropagateExceptionWhenRepositoryThrows() {
             RuntimeException databaseException = new RuntimeException("Database connection timed out");
-            when(transactionRepository.findAll()).thenThrow(databaseException);
+            when(transactionWithUsernameRepository.findAll()).thenThrow(databaseException);
 
             RuntimeException exception = assertThrows(RuntimeException.class, () -> transactionService.getTransactions());
 
             assertEquals("Database connection timed out", exception.getMessage());
-            verify(transactionRepository, times(1)).findAll();
+            verify(transactionWithUsernameRepository, times(1)).findAll();
             verifyNoInteractions(transactionMapper);
         }
     }
@@ -102,28 +106,28 @@ public class TransactionServiceTest {
         @Test
         @DisplayName("Transaction with id exists.")
         void shouldReturnTransactionById() {
-            Transaction t1 = createValidTransaction();
+            TransactionWithUsername t1 = createValidTransactionWithUsername();
 
-            when(transactionRepository.findById(1L)).thenReturn(Optional.of(t1));
+            when(transactionWithUsernameRepository.findById(1L)).thenReturn(Optional.of(t1));
 
             TransactionResponse result = transactionService.getTransactionById(1L);
 
             assertNotNull(result);
             assertEquals(ID, result.getTransactionId());
-            verify(transactionRepository, times(1)).findById(1L);
-            verify(transactionMapper, times(1)).entityToResponse(t1);
+            verify(transactionWithUsernameRepository, times(1)).findById(1L);
+            verify(transactionMapper, times(1)).entityWithUsernameToResponse(t1);
         }
 
         @Test
         @DisplayName("Transaction with id does not exist.")
         void shouldReturnExceptionWhenTransactionNotFound() {
-            when(transactionRepository.findById(1L)).thenReturn(Optional.empty());
+            when(transactionWithUsernameRepository.findById(1L)).thenReturn(Optional.empty());
 
             RuntimeException exception = assertThrows(RuntimeException.class, () -> transactionService.getTransactionById(1L));
 
             assertInstanceOf(ResourceNotFoundException.class, exception);
             assertEquals(RESOURCE_NOT_FOUND.getErrorMessage(), exception.getMessage());
-            verify(transactionRepository, times(1)).findById(1L);
+            verify(transactionWithUsernameRepository , times(1)).findById(1L);
             verifyNoInteractions(transactionMapper);
         }
 
@@ -131,12 +135,12 @@ public class TransactionServiceTest {
         @DisplayName("Should propagate runtime exception when repository fails.")
         void shouldPropagateExceptionWhenRepositoryThrows() {
             RuntimeException databaseException = new RuntimeException("Database connection timed out");
-            when(transactionRepository.findById(1L)).thenThrow(databaseException);
+            when(transactionWithUsernameRepository.findById(1L)).thenThrow(databaseException);
 
             RuntimeException exception = assertThrows(RuntimeException.class, () -> transactionService.getTransactionById(1L));
 
             assertEquals("Database connection timed out", exception.getMessage());
-            verify(transactionRepository, times(1)).findById(1L);
+            verify(transactionWithUsernameRepository, times(1)).findById(1L);
             verifyNoInteractions(transactionMapper);
         }
     }
@@ -151,9 +155,11 @@ public class TransactionServiceTest {
             TransactionRequest req = createValidTransactionRequest();
             Transaction in = createValidTransaction();
             in.setId(null);
-            Transaction out = createValidTransaction();
+            Transaction saved = createValidTransaction();
+            TransactionWithUsername out =  createValidTransactionWithUsername();
 
-            when(transactionRepository.save(in)).thenReturn(out);
+            when(transactionRepository.save(in)).thenReturn(saved);
+            when(transactionWithUsernameRepository.findById(saved.getId())).thenReturn(Optional.of(out));
 
             TransactionResponse result = transactionService.addTransaction(req);
 
@@ -161,7 +167,7 @@ public class TransactionServiceTest {
             assertEquals(ID, result.getTransactionId());
             verify(transactionRepository, times(1)).save(in);
             verify(transactionMapper, times(1)).requestToEntity(req);
-            verify(transactionMapper, times(1)).entityToResponse(out);
+            verify(transactionMapper, times(1)).entityWithUsernameToResponse(out);
         }
 
         @Test
@@ -186,20 +192,21 @@ public class TransactionServiceTest {
         @Test
         @DisplayName("Update valid transaction.")
         void shouldUpdateTransaction() {
-            // Create request and update the description
             long updateId = 1L;
             TransactionRequest req = createValidTransactionRequest();
             String newDescription = "new description";
             req.setDescription(newDescription);
 
-            // This is the existing transaction
             Transaction t1 = createValidTransaction();
-            // This is the new transaction after the update
             Transaction t2 = createValidTransaction();
             t2.setDescription(newDescription);
+            TransactionWithUsername out =  createValidTransactionWithUsername();
+            out.setId(updateId);
+            out.setDescription(newDescription);
 
-            when(transactionRepository.findById(1L)).thenReturn(Optional.of(t1));
+            when(transactionRepository.findById(updateId)).thenReturn(Optional.of(t1));
             when(transactionRepository.save(any())).thenReturn(t2);
+            when(transactionWithUsernameRepository.findById(updateId)).thenReturn(Optional.of(out));
 
             TransactionResponse result = transactionService.updateTransaction(updateId, req);
 
@@ -209,7 +216,7 @@ public class TransactionServiceTest {
             verify(transactionRepository, times(1)).findById(1L);
             verify(transactionMapper, times(1)).updateEntityFromRequest(req, t1);
             verify(transactionRepository, times(1)).save(t2);
-            verify(transactionMapper, times(1)).entityToResponse(t2);
+            verify(transactionMapper, times(1)).entityWithUsernameToResponse(out);
         }
 
         @Test
@@ -220,13 +227,13 @@ public class TransactionServiceTest {
             String newDescription = "new description";
             req.setDescription(newDescription);
 
-            when(transactionRepository.findById(1L)).thenThrow(new ResourceNotFoundException());
+            when(transactionRepository.findById(updateId)).thenThrow(new ResourceNotFoundException());
 
             ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> transactionService.updateTransaction(updateId, req));
 
             assertEquals(RESOURCE_NOT_FOUND.getErrorMessage(), exception.getMessage());
-            verify(transactionRepository, times(1)).findById(1L);
+            verify(transactionRepository, times(1)).findById(updateId);
             verifyNoInteractions(transactionMapper);
         }
 
