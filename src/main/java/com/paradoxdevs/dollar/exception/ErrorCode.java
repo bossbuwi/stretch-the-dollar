@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_TOKEN_SIGNATURE(106, "Auth token has invalid signature."),
     MALFORMED_JWT(107, "Malformed JWT, please check your headers."),
     RESOURCE_ALREADY_EXISTS(108, "The %s: %s already exists."),
+    INVALID_USER(109, "User is not allowed to perform this operation."),
     INTERNAL_SERVER_ERROR(999, "Internal server error."),;
 
     private final int code;

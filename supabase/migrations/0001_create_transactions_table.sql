@@ -4,6 +4,5 @@ create table public.transactions (
     description text,
     transaction_type text not null,
     amount float4 not null,
-    currency text not null,
-    created_at timestamptz default now()
+    currency text not null
 );

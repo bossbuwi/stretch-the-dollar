@@ -10,6 +10,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,10 @@ public class ErrorResponseFactory {
             return processErrorData(request, ErrorCode.INTERNAL_SERVER_ERROR, null, null, null);
         }
         return processErrorData(request, ErrorCode.UNAUTHORIZED, null, null, null);
+    }
+
+    public ResponseEntity<ErrorResponse> buildResponseEntity(AccessDeniedException e, WebRequest request) {
+        return processErrorData(request, ErrorCode.INVALID_USER, null, null, null);
     }
 
     public ResponseEntity<ErrorResponse> buildResponseEntity(JwtException e, WebRequest request) {
@@ -107,7 +112,7 @@ public class ErrorResponseFactory {
     private HttpStatus getStatus(ErrorCode code) {
         return switch (code) {
             case UNAUTHENTICATED, MALFORMED_JWT -> HttpStatus.UNAUTHORIZED;
-            case UNAUTHORIZED, EXPIRED_TOKEN, INVALID_TOKEN_SIGNATURE -> HttpStatus.FORBIDDEN;
+            case UNAUTHORIZED, EXPIRED_TOKEN, INVALID_TOKEN_SIGNATURE, INVALID_USER -> HttpStatus.FORBIDDEN;
             case REQUEST_VALIDATION_ERROR, MALFORMED_REQUEST-> HttpStatus.BAD_REQUEST;
             case RESOURCE_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case RESOURCE_ALREADY_EXISTS -> HttpStatus.UNPROCESSABLE_CONTENT;

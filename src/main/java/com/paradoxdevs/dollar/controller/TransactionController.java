@@ -39,14 +39,12 @@ public class TransactionController {
 
     @PostMapping("/")
     public ResponseEntity<TransactionResponse> createTransaction(@RequestBody @Valid TransactionRequest request) {
-        log.info(request.toString());
         return ResponseEntity.ok(transactionService.addTransaction(request));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable Long id,
                                                                  @RequestBody @Valid TransactionRequest request) {
-        log.info(request.toString());
         return ResponseEntity.ok(transactionService.updateTransaction(id, request));
     }
 

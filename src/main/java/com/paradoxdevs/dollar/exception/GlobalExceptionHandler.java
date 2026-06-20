@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,7 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 
 @Slf4j
 @RestControllerAdvice
-@Order(2)
+@Order(1)
 public class GlobalExceptionHandler {
     private final ErrorResponseFactory errorResponseFactory;
 
@@ -24,6 +25,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e, WebRequest request) {
+        return errorResponseFactory.buildResponseEntity(e, request);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleOwnershipException(AccessDeniedException e, WebRequest request) {
         return errorResponseFactory.buildResponseEntity(e, request);
     }
 

@@ -16,4 +16,8 @@ public class TransactionResponse {
     private String transactionType;
     private double amount;
     private String currency;
+    private String createdBy;
+    private String createdAt;
+    private String updatedBy;
+    private String updatedAt;
 }
