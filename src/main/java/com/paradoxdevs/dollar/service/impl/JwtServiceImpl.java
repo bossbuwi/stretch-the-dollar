@@ -1,5 +1,6 @@
 package com.paradoxdevs.dollar.service.impl;
 
+import com.paradoxdevs.dollar.entity.User;
 import com.paradoxdevs.dollar.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -7,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.security.Key;
 import java.time.Clock;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -29,31 +32,39 @@ public class JwtServiceImpl implements JwtService {
         this.clock = clock;
     }
 
-    /**
-     * Extracts the username (subject) from the token
-     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    /**
-     * Generic method to extract a specific claim from the token
-     */
+    public String extractUuid(String token) {
+        return extractClaim(token, claims -> claims.get("uuid", String.class));
+    }
+
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        Object rolesObj = claims.get("roles");
+        return rolesObj instanceof List<?> rawList
+                ? rawList.stream().map(Object::toString).toList()
+                : List.of();
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    /**
-     * Generates a token with no extra claims (only UserDetails)
-     */
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("roles", userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList());
+
+        if (userDetails instanceof User user) {
+            extraClaims.put("uuid", user.getUuid().toString());
+        }
+        return generateToken(extraClaims, userDetails);
     }
 
-    /**
-     * Generates a token with extra claims (like roles or custom data)
-     */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         long now = clock.millis();
         return Jwts.builder()
@@ -65,24 +76,25 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
-    /**
-     * Validates if the token belongs to the user and is not expired
-     */
+    public boolean isTokenValid(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            return claims.getExpiration().after(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        try {
+            Claims claims = extractAllClaims(token);
+            return claims.getSubject().equals(userDetails.getUsername()) &&
+                    claims.getExpiration().after(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    /**
-     * Checks if the token has passed its expiration date
-     */
-    private boolean isTokenExpired(String token) {
-        return extractAllClaims(token).getExpiration().before(new Date());
-    }
-
-    /**
-     * Extracts all claims from the JWT using the secret key
-     */
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
@@ -93,9 +105,6 @@ public class JwtServiceImpl implements JwtService {
                 .getBody();
     }
 
-    /**
-     * Decodes the secret key and returns a Key object for signing/verification
-     */
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
