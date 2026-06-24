@@ -13,10 +13,14 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,16 +50,22 @@ public class OwnershipAspect {
         Long id = (Long) joinPoint.getArgs()[0];
         Class<?> entityClass = annotation.value();
 
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication auth = securityContext.getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
+        if (isAdmin) {
+            return joinPoint.proceed();
+        }
+
         Object entity = entityManager.find(entityClass, id);
         if (entity == null) {
             throw new ResourceNotFoundException(
                     "Entity of type " + entityClass.getSimpleName() + " with id " + id + " not found"
             );
         }
-
         UUID currentUserId = auditorAware.getCurrentAuditor()
                 .orElseThrow(() -> new AccessDeniedException("Current Auditor is null"));
-
         UUID entityOwnerId = extractCreatedBy(entity, entityClass);
 
         if (!currentUserId.equals(entityOwnerId)) {

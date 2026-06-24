@@ -66,7 +66,7 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponse updateTransaction(Long id, TransactionRequest request) {
         Transaction existing = transactionRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         transactionMapper.updateEntityFromRequest(request, existing);
-        Transaction saved = transactionRepository.save(existing);
+        Transaction saved = transactionRepository.saveAndFlush(existing);
         TransactionWithUsername output = transactionWithUsernameRepository.findById(saved.getId())
                 .orElseThrow(ResourceNotFoundException::new);
         return transactionMapper.entityWithUsernameToResponse(output);

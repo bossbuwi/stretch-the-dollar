@@ -7,6 +7,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.paradoxdevs.dollar.exception.ErrorCode.REQUEST_VALIDATION_ERROR;
 
 @Slf4j
 @Component
@@ -57,11 +60,19 @@ public class ErrorResponseFactory {
         ArrayList<String> fieldErrors = e.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.toCollection(ArrayList::new));
-        return processErrorData(request, ErrorCode.REQUEST_VALIDATION_ERROR, null, fieldErrors, null);
+        return processErrorData(request, REQUEST_VALIDATION_ERROR, null, fieldErrors, null);
+    }
+
+    public ResponseEntity<ErrorResponse> buildResponseEntity(IllegalArgumentException e, WebRequest request) {
+        return processErrorData(request, ErrorCode.REQUEST_VALIDATION_ERROR, e.getMessage(), null, null);
     }
 
     public ResponseEntity<ErrorResponse> buildResponseEntity(ResourceNotFoundException e, WebRequest request) {
         return processErrorData(request, e.getErrorCode(), e.getMessage(), null, null);
+    }
+
+    public ResponseEntity<ErrorResponse> buildResponseEntity(DataAccessException e, WebRequest request) {
+        return processErrorData(request, ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage(), null, null);
     }
 
     public ResponseEntity<ErrorResponse> buildResponseEntity(DataIntegrityViolationException e, WebRequest request) {
