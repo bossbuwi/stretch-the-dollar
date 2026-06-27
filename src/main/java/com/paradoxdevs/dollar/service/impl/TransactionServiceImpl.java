@@ -3,7 +3,6 @@ package com.paradoxdevs.dollar.service.impl;
 import com.paradoxdevs.dollar.api.request.TransactionRequest;
 import com.paradoxdevs.dollar.api.response.TransactionResponse;
 import com.paradoxdevs.dollar.aspect.annotation.CheckOwnership;
-import com.paradoxdevs.dollar.aspect.annotation.PerformanceMetrics;
 import com.paradoxdevs.dollar.entity.Transaction;
 import com.paradoxdevs.dollar.entity.TransactionWithUsername;
 import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
@@ -31,7 +30,6 @@ public class TransactionServiceImpl implements TransactionService {
         this.transactionMapper = transactionMapper;
     }
 
-    @PerformanceMetrics
     @Override
     public List<TransactionResponse> getTransactions() {
         return transactionWithUsernameRepository.findAll()
@@ -40,7 +38,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .collect(Collectors.toList());
     }
 
-    @PerformanceMetrics
     @Override
     public TransactionResponse getTransactionById(Long id) {
         return transactionWithUsernameRepository.findById(id)
@@ -48,7 +45,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
-    @PerformanceMetrics
     @Transactional
     @Override
     public TransactionResponse addTransaction(TransactionRequest request) {
@@ -59,21 +55,19 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionMapper.entityWithUsernameToResponse(output);
     }
 
-    @PerformanceMetrics
     @CheckOwnership(Transaction.class)
     @Transactional
     @Override
     public TransactionResponse updateTransaction(Long id, TransactionRequest request) {
         Transaction existing = transactionRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         transactionMapper.updateEntityFromRequest(request, existing);
-        Transaction saved = transactionRepository.save(existing);
+        Transaction saved = transactionRepository.saveAndFlush(existing);
         TransactionWithUsername output = transactionWithUsernameRepository.findById(saved.getId())
                 .orElseThrow(ResourceNotFoundException::new);
         return transactionMapper.entityWithUsernameToResponse(output);
     }
 
     @CheckOwnership(Transaction.class)
-    @PerformanceMetrics
     @Override
     public void deleteTransaction(long id) {
         // TODO: Find a way to enable this method to

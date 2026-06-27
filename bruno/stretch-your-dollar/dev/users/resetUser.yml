@@ -1,0 +1,19 @@
+info:
+  name: resetUser
+  type: http
+  seq: 12
+
+http:
+  method: PUT
+  url: http://localhost:{{port}}/user/reset?uuid=c700a86b-ec72-4523-8720-e5c47ba82084
+  params:
+    - name: uuid
+      value: c700a86b-ec72-4523-8720-e5c47ba82084
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

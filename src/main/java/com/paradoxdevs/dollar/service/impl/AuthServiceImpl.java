@@ -2,6 +2,7 @@ package com.paradoxdevs.dollar.service.impl;
 
 import com.paradoxdevs.dollar.api.request.AuthRequest;
 import com.paradoxdevs.dollar.api.response.AuthResponse;
+import com.paradoxdevs.dollar.entity.Role;
 import com.paradoxdevs.dollar.entity.User;
 import com.paradoxdevs.dollar.mapper.AuthMapper;
 import com.paradoxdevs.dollar.model.UserDto;
@@ -40,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse register(AuthRequest request) {
         User user = authMapper.requestToEntity(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.addRole(Role.USER);
         User registeredUser = userRepository.save(user);
         return AuthResponse.builder()
                 .username(registeredUser.getUsername())

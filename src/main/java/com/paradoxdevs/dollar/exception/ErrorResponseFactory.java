@@ -7,6 +7,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.paradoxdevs.dollar.exception.ErrorCode.REQUEST_VALIDATION_ERROR;
 
 @Slf4j
 @Component
@@ -57,11 +60,23 @@ public class ErrorResponseFactory {
         ArrayList<String> fieldErrors = e.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.toCollection(ArrayList::new));
-        return processErrorData(request, ErrorCode.REQUEST_VALIDATION_ERROR, null, fieldErrors, null);
+        return processErrorData(request, REQUEST_VALIDATION_ERROR, null, fieldErrors, null);
+    }
+
+    public ResponseEntity<ErrorResponse> buildResponseEntity(IllegalArgumentException e, WebRequest request) {
+        return processErrorData(request, ErrorCode.REQUEST_VALIDATION_ERROR, e.getMessage(), null, null);
     }
 
     public ResponseEntity<ErrorResponse> buildResponseEntity(ResourceNotFoundException e, WebRequest request) {
         return processErrorData(request, e.getErrorCode(), e.getMessage(), null, null);
+    }
+
+    public ResponseEntity<ErrorResponse> buildResponseEntity(FeatureDisabledException e, WebRequest request) {
+        return processErrorData(request, ErrorCode.FEATURE_DISABLED, null, null, null);
+    }
+
+    public ResponseEntity<ErrorResponse> buildResponseEntity(DataAccessException e, WebRequest request) {
+        return processErrorData(request, ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage(), null, null);
     }
 
     public ResponseEntity<ErrorResponse> buildResponseEntity(DataIntegrityViolationException e, WebRequest request) {
@@ -112,10 +127,12 @@ public class ErrorResponseFactory {
     private HttpStatus getStatus(ErrorCode code) {
         return switch (code) {
             case UNAUTHENTICATED, MALFORMED_JWT -> HttpStatus.UNAUTHORIZED;
-            case UNAUTHORIZED, EXPIRED_TOKEN, INVALID_TOKEN_SIGNATURE, INVALID_USER -> HttpStatus.FORBIDDEN;
+            case UNAUTHORIZED, EXPIRED_TOKEN,
+                 INVALID_TOKEN_SIGNATURE, INVALID_USER -> HttpStatus.FORBIDDEN;
             case REQUEST_VALIDATION_ERROR, MALFORMED_REQUEST-> HttpStatus.BAD_REQUEST;
             case RESOURCE_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case RESOURCE_ALREADY_EXISTS -> HttpStatus.UNPROCESSABLE_CONTENT;
+            case FEATURE_DISABLED ->  HttpStatus.SERVICE_UNAVAILABLE;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }
