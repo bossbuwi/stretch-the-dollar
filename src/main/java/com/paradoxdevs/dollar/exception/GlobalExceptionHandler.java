@@ -63,4 +63,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException e, WebRequest request) {
         return errorResponseFactory.buildResponseEntity(e, request);
     }
+
+    @ExceptionHandler(FeatureDisabledException.class)
+    public ResponseEntity<ErrorResponse> handleDisabledFeature(FeatureDisabledException e, WebRequest request) {
+        return errorResponseFactory.buildResponseEntity(e, request);
+    }
 }

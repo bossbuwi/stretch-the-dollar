@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 @Slf4j
 @Aspect
 @Component
-@Order(1)
+@Order(2)
 public class PerformanceMetricsAspect {
 
     @Pointcut("@annotation(com.paradoxdevs.dollar.aspect.annotation.PerformanceMetrics)")
@@ -32,8 +32,17 @@ public class PerformanceMetricsAspect {
 
     @Around("checkPerformanceMetrics()")
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
-        String methodName = getMethodName(joinPoint);
-        log.info("Execution start [{}]:", methodName);
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        PerformanceMetrics annotation = method.getAnnotation(PerformanceMetrics.class);
+        if (annotation == null) {
+            annotation = joinPoint.getTarget().getClass().getAnnotation(PerformanceMetrics.class);
+        }
+
+        String className = joinPoint.getSignature().getDeclaringTypeName();
+        String methodName = joinPoint.getSignature().getName();
+
+        log.info("Execution start [{}.{}]:", className,methodName);
 
         long start = System.nanoTime();
         try {
@@ -42,29 +51,15 @@ public class PerformanceMetricsAspect {
             long end = System.nanoTime();
             String executionTime = computePerformanceTime(start, end);
 
-            log.info("Execution end [{}]: Finished in {}s", methodName, executionTime);
+            log.info("Execution end [{}.{}]: Finished in {}s", className, methodName, executionTime);
 
             return result;
         } catch (Throwable ex) {
             long end = System.nanoTime();
             String elapsedTime = computePerformanceTime(start, end);
-            log.warn("Exception in [{}]: Time elapsed: {}s", methodName, elapsedTime, ex);
+            log.warn("Exception in [{}.{}]: Time elapsed: {}s", className, methodName, elapsedTime, ex);
             throw ex;
         }
-    }
-
-    private static String getMethodName(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = joinPoint.getTarget().getClass()
-                .getMethod(signature.getName(), signature.getParameterTypes());
-
-        PerformanceMetrics annotation = method.getAnnotation(PerformanceMetrics.class);
-        if (annotation == null) {
-            // Fallback: check class annotation
-            annotation = joinPoint.getTarget().getClass().getAnnotation(PerformanceMetrics.class);
-        }
-
-        return signature.getName();
     }
 
     private String computePerformanceTime(long start, long end) {

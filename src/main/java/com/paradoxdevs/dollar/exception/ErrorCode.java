@@ -14,6 +14,7 @@ public enum ErrorCode {
     MALFORMED_JWT(107, "Malformed JWT, please check your headers."),
     RESOURCE_ALREADY_EXISTS(108, "The %s: %s already exists."),
     INVALID_USER(109, "User is not allowed to perform this operation."),
+    FEATURE_DISABLED(998, "Feature is currently disabled."),
     INTERNAL_SERVER_ERROR(999, "Internal server error."),;
 
     private final int code;

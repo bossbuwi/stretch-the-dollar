@@ -1,6 +1,9 @@
 package com.paradoxdevs.dollar.controller;
 
 import com.paradoxdevs.dollar.api.response.UserResponse;
+import com.paradoxdevs.dollar.aspect.annotation.WithPermission;
+import com.paradoxdevs.dollar.constant.PermissionType;
+import com.paradoxdevs.dollar.entity.Role;
 import com.paradoxdevs.dollar.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@WithPermission(notAllowedRole = Role.BANNED)
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -43,42 +47,49 @@ public class UserController {
         return ResponseEntity.ok(userService.getAvailableRoles());
     }
 
+    @WithPermission(permission = PermissionType.NONSELF)
     @PutMapping("/admin/make")
     public ResponseEntity<Boolean> makeAdmin(@RequestParam String uuid) {
         userService.makeAdmin(uuid);
         return ResponseEntity.noContent().build();
     }
 
+    @WithPermission(permission = PermissionType.NONSELF)
     @PutMapping("/admin/remove")
     public ResponseEntity<Boolean> demoteAdmin(@RequestParam String uuid) {
         userService.demoteAdmin(uuid);
         return ResponseEntity.noContent().build();
     }
 
+    @WithPermission(permission = PermissionType.NONSELF)
     @PutMapping("/restricted/make")
     public ResponseEntity<Boolean> restrictUser(@RequestParam String uuid) {
         userService.restrictUser(uuid);
         return ResponseEntity.noContent().build();
     }
 
+    @WithPermission(permission = PermissionType.NONSELF)
     @PutMapping("/restricted/remove")
     public ResponseEntity<Boolean> allowUser(@RequestParam String uuid) {
         userService.allowUser(uuid);
         return ResponseEntity.noContent().build();
     }
 
+    @WithPermission(permission = PermissionType.NONSELF)
     @PutMapping("/ban/make")
     public ResponseEntity<Boolean> banUser(@RequestParam String uuid) {
         userService.banUser(uuid);
         return ResponseEntity.noContent().build();
     }
 
+    @WithPermission(permission = PermissionType.NONSELF)
     @PutMapping("/ban/remove")
     public ResponseEntity<Boolean> unbanUser(@RequestParam String uuid) {
         userService.unbanUser(uuid);
         return ResponseEntity.noContent().build();
     }
 
+    @WithPermission(permission = PermissionType.NONE)
     @PutMapping("/reset")
     public ResponseEntity<Boolean> resetUser(@RequestParam String uuid) {
         userService.resetUser(uuid);
