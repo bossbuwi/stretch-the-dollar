@@ -10,7 +10,6 @@ import com.paradoxdevs.dollar.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -53,14 +52,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUuid(queryUuid)
                 .map(userMapper::entityToResponse)
                 .orElseThrow(ResourceNotFoundException::new);
-    }
-
-    @Override
-    public UserResponse getAvailableRoles() {
-        UserResponse response = new UserResponse();
-        Arrays.stream(Role.values())
-                .forEach(role -> response.getRoles().add(role.toString()));
-        return response;
     }
 
     @Override

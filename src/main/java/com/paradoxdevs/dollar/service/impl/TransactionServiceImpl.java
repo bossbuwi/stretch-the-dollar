@@ -10,12 +10,14 @@ import com.paradoxdevs.dollar.mapper.TransactionMapper;
 import com.paradoxdevs.dollar.repository.TransactionRepository;
 import com.paradoxdevs.dollar.repository.TransactionWithUsernameRepository;
 import com.paradoxdevs.dollar.service.TransactionService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
@@ -68,11 +70,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @CheckOwnership(Transaction.class)
+    @Transactional
     @Override
-    public void deleteTransaction(long id) {
-        // TODO: Find a way to enable this method to
-        //  throw an exception if the provided id
-        //  does not exist.
+    public void deleteTransaction(Long id) {
+        transactionRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         transactionRepository.deleteById(id);
     }
 }

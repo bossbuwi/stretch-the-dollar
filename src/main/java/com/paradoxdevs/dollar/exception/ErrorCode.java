@@ -14,6 +14,8 @@ public enum ErrorCode {
     MALFORMED_JWT(107, "Malformed JWT, please check your headers."),
     RESOURCE_ALREADY_EXISTS(108, "The %s: %s already exists."),
     INVALID_USER(109, "User is not allowed to perform this operation."),
+    OLD_NEW_PASSWORD_MATCH(110, "New password cannot be the same as the old password."),
+    PASSWORDS_DONT_MATCH(111, "New passwords don't match."),
     FEATURE_DISABLED(998, "Feature is currently disabled."),
     INTERNAL_SERVER_ERROR(999, "Internal server error."),;
 

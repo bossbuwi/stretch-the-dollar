@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static com.paradoxdevs.dollar.constant.AppConstants.AUTH_ROUTES;
 import static com.paradoxdevs.dollar.constant.AppConstants.H2_CONSOLE;
+import static com.paradoxdevs.dollar.constant.AppConstants.HEALTH_ROUTE;
 
 @Configuration
 @EnableWebSecurity
@@ -33,6 +34,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_ROUTES).permitAll()
+                        .requestMatchers(HEALTH_ROUTE).permitAll()
                         .requestMatchers(H2_CONSOLE).permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()

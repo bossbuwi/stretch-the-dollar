@@ -10,5 +10,5 @@ public interface TransactionService {
     TransactionResponse getTransactionById(Long id);
     TransactionResponse addTransaction(TransactionRequest request);
     TransactionResponse updateTransaction(Long id, TransactionRequest request);
-    void deleteTransaction(long id);
+    void deleteTransaction(Long id);
 }
