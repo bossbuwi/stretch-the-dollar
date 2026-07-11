@@ -1,17 +1,24 @@
 package com.paradoxdevs.dollar.controller;
 
 import com.paradoxdevs.dollar.api.response.UserResponse;
+import com.paradoxdevs.dollar.aspect.annotation.PerformanceMetrics;
 import com.paradoxdevs.dollar.aspect.annotation.WithPermission;
 import com.paradoxdevs.dollar.constant.PermissionType;
 import com.paradoxdevs.dollar.entity.Role;
 import com.paradoxdevs.dollar.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @WithPermission(notAllowedRole = Role.BANNED)
+@PerformanceMetrics
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -40,11 +47,6 @@ public class UserController {
     @GetMapping("/uuid")
     public ResponseEntity<UserResponse> getUserByUuid(@RequestParam String uuid) {
         return ResponseEntity.ok(userService.getUserByUuid(uuid));
-    }
-
-    @GetMapping("/available-roles")
-    public ResponseEntity<UserResponse> getRoles() {
-        return ResponseEntity.ok(userService.getAvailableRoles());
     }
 
     @WithPermission(permission = PermissionType.NONSELF)

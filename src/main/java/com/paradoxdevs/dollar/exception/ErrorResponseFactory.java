@@ -41,6 +41,10 @@ public class ErrorResponseFactory {
         return processErrorData(request, ErrorCode.UNAUTHORIZED, null, null, null);
     }
 
+    public ResponseEntity<ErrorResponse> buildResponseEntity(PasswordException e, WebRequest request) {
+        return processErrorData(request, e.getErrorCode(), null, null, null);
+    }
+
     public ResponseEntity<ErrorResponse> buildResponseEntity(AccessDeniedException e, WebRequest request) {
         return processErrorData(request, ErrorCode.INVALID_USER, null, null, null);
     }

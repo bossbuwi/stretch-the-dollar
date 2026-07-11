@@ -1,4 +1,4 @@
-package com.paradoxdevs.dollar.model;
+package com.paradoxdevs.dollar.api.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @NoArgsConstructor
-public class UserDto {
-    private Long id;
-    private String username;
-    private String password;
+public class RoleResponse {
+    String roleName;
 }

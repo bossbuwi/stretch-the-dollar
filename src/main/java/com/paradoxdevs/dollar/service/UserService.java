@@ -9,7 +9,6 @@ public interface UserService {
     UserResponse getUserById(Long id);
     UserResponse getUserByUsername(String username);
     UserResponse getUserByUuid(String uuid);
-    UserResponse getAvailableRoles();
     void makeAdmin(String uuid);
     void demoteAdmin(String uuid);
     void restrictUser(String uuid);

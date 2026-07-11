@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:{{port}}/user/available-roles
+  url: http://localhost:{{port}}/role/index
   auth: inherit
 
 settings:

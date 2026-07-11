@@ -1,7 +1,7 @@
 info:
   name: demoteAdmin
   type: http
-  seq: 7
+  seq: 6
 
 http:
   method: PUT

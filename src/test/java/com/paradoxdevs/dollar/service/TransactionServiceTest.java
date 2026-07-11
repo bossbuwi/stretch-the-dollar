@@ -205,7 +205,7 @@ public class TransactionServiceTest {
             out.setDescription(newDescription);
 
             when(transactionRepository.findById(updateId)).thenReturn(Optional.of(t1));
-            when(transactionRepository.save(any())).thenReturn(t2);
+            when(transactionRepository.saveAndFlush(any())).thenReturn(t2);
             when(transactionWithUsernameRepository.findById(updateId)).thenReturn(Optional.of(out));
 
             TransactionResponse result = transactionService.updateTransaction(updateId, req);
@@ -215,7 +215,7 @@ public class TransactionServiceTest {
             assertEquals(updateId, result.getTransactionId());
             verify(transactionRepository, times(1)).findById(1L);
             verify(transactionMapper, times(1)).updateEntityFromRequest(req, t1);
-            verify(transactionRepository, times(1)).save(t2);
+            verify(transactionRepository, times(1)).saveAndFlush(t2);
             verify(transactionMapper, times(1)).entityWithUsernameToResponse(out);
         }
 
@@ -261,9 +261,26 @@ public class TransactionServiceTest {
         @DisplayName("Delete transaction when available.")
         void shouldDeleteTransaction() {
             long deleteId = 1L;
+            when(transactionRepository.findById(deleteId)).thenReturn(Optional.of(createValidTransaction()));
 
             assertDoesNotThrow(() -> transactionService.deleteTransaction(deleteId));
             verify(transactionRepository, times(1)).deleteById(deleteId);
+            verifyNoInteractions(transactionMapper);
+        }
+
+        @Test
+        @DisplayName("Throw exception if transaction is not found.")
+        void shouldThrowIfTransactionNotFound() {
+            long deleteId = 1L;
+
+            when(transactionRepository.findById(deleteId)).thenThrow(new ResourceNotFoundException());
+
+            RuntimeException exception = assertThrows(RuntimeException.class,
+                    () -> transactionService.deleteTransaction(deleteId));
+
+            assertEquals(RESOURCE_NOT_FOUND.getErrorMessage(), exception.getMessage());
+            verify(transactionRepository, times(1)).findById(deleteId);
+            verifyNoMoreInteractions(transactionRepository);
             verifyNoInteractions(transactionMapper);
         }
 
@@ -272,13 +289,14 @@ public class TransactionServiceTest {
         void shouldPropagateExceptionWhenRepositoryThrows() {
             long deleteId = 1L;
             RuntimeException databaseException = new RuntimeException("Database connection timed out");
-            doThrow(databaseException).when(transactionRepository).deleteById(deleteId);
+            when(transactionRepository.findById(any())).thenThrow(databaseException);
 
             RuntimeException exception = assertThrows(RuntimeException.class,
                     () -> transactionService.deleteTransaction(deleteId));
 
             assertEquals("Database connection timed out", exception.getMessage());
-            verify(transactionRepository, times(1)).deleteById(deleteId);
+            verify(transactionRepository, times(1)).findById(deleteId);
+            verifyNoMoreInteractions(transactionRepository);
             verifyNoInteractions(transactionMapper);
         }
     }

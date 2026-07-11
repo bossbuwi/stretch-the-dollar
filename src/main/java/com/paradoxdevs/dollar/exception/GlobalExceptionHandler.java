@@ -29,6 +29,11 @@ public class GlobalExceptionHandler {
         return errorResponseFactory.buildResponseEntity(e, request);
     }
 
+    @ExceptionHandler(PasswordException.class)
+    public ResponseEntity<ErrorResponse> handlePasswordException(PasswordException e, WebRequest request) {
+        return errorResponseFactory.buildResponseEntity(e, request);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleOwnershipException(AccessDeniedException e, WebRequest request) {
         return errorResponseFactory.buildResponseEntity(e, request);
