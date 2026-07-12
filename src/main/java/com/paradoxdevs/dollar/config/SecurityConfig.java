@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static com.paradoxdevs.dollar.constant.AppConstants.AUTH_ROUTES;
+import static com.paradoxdevs.dollar.constant.AppConstants.CHANGE_PASSWORD_ROUTE;
 import static com.paradoxdevs.dollar.constant.AppConstants.H2_CONSOLE;
 import static com.paradoxdevs.dollar.constant.AppConstants.HEALTH_ROUTE;
 
@@ -33,6 +34,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(unauthorizedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(CHANGE_PASSWORD_ROUTE).authenticated()
                         .requestMatchers(AUTH_ROUTES).permitAll()
                         .requestMatchers(HEALTH_ROUTE).permitAll()
                         .requestMatchers(H2_CONSOLE).permitAll()
