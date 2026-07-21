@@ -1,7 +1,7 @@
 package com.paradoxdevs.dollar.aspect;
 
 import com.paradoxdevs.dollar.aspect.annotation.CheckOwnership;
-import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
+import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

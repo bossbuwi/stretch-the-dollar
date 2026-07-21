@@ -6,9 +6,9 @@ import com.paradoxdevs.dollar.api.response.AuthResponse;
 import com.paradoxdevs.dollar.api.response.UserResponse;
 import com.paradoxdevs.dollar.entity.Role;
 import com.paradoxdevs.dollar.entity.User;
-import com.paradoxdevs.dollar.exception.PasswordException;
-import com.paradoxdevs.dollar.exception.ErrorCode;
-import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
+import com.paradoxdevs.dollar.error.exception.PasswordException;
+import com.paradoxdevs.dollar.error.ErrorCode;
+import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.AuthMapper;
 import com.paradoxdevs.dollar.repository.UserRepository;
 import com.paradoxdevs.dollar.service.AuthService;
@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public void resetPassword(PasswordRequest request) {
+    public void changePassword(PasswordRequest request) {
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow(ResourceNotFoundException::new);
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

@@ -3,7 +3,7 @@ package com.paradoxdevs.dollar.aspect;
 import com.paradoxdevs.dollar.aspect.annotation.WithPermission;
 import com.paradoxdevs.dollar.constant.PermissionType;
 import com.paradoxdevs.dollar.entity.Role;
-import com.paradoxdevs.dollar.exception.FeatureDisabledException;
+import com.paradoxdevs.dollar.error.exception.FeatureDisabledException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -42,7 +42,6 @@ public class PermissionAspect {
     @Pointcut("methodWithAnnotation() || (classWithAnnotation() && publicMethods())")
     public void checkPermission() {}
 
-    @Order(1)
     @Around("checkPermission()")
     public Object grantPermissions(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -53,54 +52,58 @@ public class PermissionAspect {
             annotation = joinPoint.getTarget().getClass().getAnnotation(WithPermission.class);
         }
 
-        Role[] notAllowedRole = annotation.notAllowedRole();
-
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication auth = securityContext.getAuthentication();
         List<String> authorities = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
-        if (haveMatchingRoles(notAllowedRole, authorities)) {
-            throw new AccessDeniedException("You are not allowed to perform this action");
-        }
+        HashMap<String, String> principal = (HashMap<String, String>) auth.getPrincipal();
+        UUID userUuid = UUID.fromString(principal.get("uuid"));
+
+        Object[] args = joinPoint.getArgs();
+
+        checkFeatureEnabled(annotation);
+        checkSelfPermission(annotation, args, userUuid);
+        checkNonSelfPermission(annotation, args, userUuid);
+        checkProhibitedRoles(annotation, authorities);
+        checkAllowedRoles();
 
         return joinPoint.proceed();
     }
 
-    @Around("checkPermission()")
-    public Object checkUser(ProceedingJoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = joinPoint.getTarget().getClass()
-                .getMethod(signature.getName(), signature.getParameterTypes());
-        WithPermission annotation = method.getAnnotation(WithPermission.class);
-        if (annotation == null) {
-            annotation = joinPoint.getTarget().getClass().getAnnotation(WithPermission.class);
+    private void checkFeatureEnabled(WithPermission annotation) {
+        if (annotation.permission() == PermissionType.NONE) {
+            throw new FeatureDisabledException();
         }
+    }
 
-        PermissionType permission = annotation.permission();
-
-        if (permission == PermissionType.NONSELF) {
-            Object[] args = joinPoint.getArgs();
-            if (args == null || args.length == 0) {
-                throw new RuntimeException("Method args is empty.");
+    private void checkSelfPermission(WithPermission annotation, Object[] args, UUID userUuid) {
+        UUID inputUUid = UUID.fromString(args[0].toString());
+        if (annotation.permission() == PermissionType.SELF) {
+            if (!inputUUid.equals(userUuid)) {
+                throw new AccessDeniedException("You are not allowed to perform this action");
             }
+        }
+    }
 
+    private void checkNonSelfPermission(WithPermission annotation, Object[] args, UUID userUuid) {
+        if (annotation.permission() == PermissionType.NONSELF) {
             UUID inputUUid = UUID.fromString(args[0].toString());
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            Authentication auth = securityContext.getAuthentication();
-            HashMap<String, String> principal = (HashMap<String, String>) auth.getPrincipal();
-            UUID userUuid = UUID.fromString(principal.get("uuid"));
-
             if (inputUUid.equals(userUuid)) {
                 throw new AccessDeniedException("You are not allowed to perform this action");
             }
         }
-        
-        if (permission == PermissionType.NONE) {
-            throw new FeatureDisabledException();
-        }
+    }
 
-        return joinPoint.proceed();
+    private void checkProhibitedRoles(WithPermission annotation, List<String> authorities) {
+        Role[] notAllowedRole = annotation.notAllowedRole();
+        if (haveMatchingRoles(notAllowedRole, authorities)) {
+            throw new AccessDeniedException("You are not allowed to perform this action");
+        }
+    }
+
+    private void checkAllowedRoles() {
+
     }
 
     private boolean haveMatchingRoles(Role[] roles, List<String> authorities) {

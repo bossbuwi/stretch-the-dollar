@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static com.paradoxdevs.dollar.exception.ErrorCode.RESOURCE_NOT_FOUND;
+import static com.paradoxdevs.dollar.error.ErrorCode.RESOURCE_NOT_FOUND;
 
 @Configuration
 public class AuthProviderConfig {

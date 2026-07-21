@@ -9,5 +9,5 @@ public interface AuthService {
     UserResponse register(AuthRequest request);
     AuthResponse login(AuthRequest request);
     void forgetPassword(AuthRequest request);
-    void resetPassword(PasswordRequest request);
+    void changePassword(PasswordRequest request);
 }
