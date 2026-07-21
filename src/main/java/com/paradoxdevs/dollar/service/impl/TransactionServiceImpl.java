@@ -5,7 +5,7 @@ import com.paradoxdevs.dollar.api.response.TransactionResponse;
 import com.paradoxdevs.dollar.aspect.annotation.CheckOwnership;
 import com.paradoxdevs.dollar.entity.Transaction;
 import com.paradoxdevs.dollar.entity.TransactionWithUsername;
-import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
+import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionMapper;
 import com.paradoxdevs.dollar.repository.TransactionRepository;
 import com.paradoxdevs.dollar.repository.TransactionWithUsernameRepository;

@@ -3,7 +3,7 @@ package com.paradoxdevs.dollar.service;
 import com.paradoxdevs.dollar.api.response.UserResponse;
 import com.paradoxdevs.dollar.entity.Role;
 import com.paradoxdevs.dollar.entity.User;
-import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
+import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.UserMapper;
 import com.paradoxdevs.dollar.repository.UserRepository;
 import com.paradoxdevs.dollar.service.impl.UserServiceImpl;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.paradoxdevs.dollar.exception.ErrorCode.RESOURCE_NOT_FOUND;
+import static com.paradoxdevs.dollar.error.ErrorCode.RESOURCE_NOT_FOUND;
 import static com.paradoxdevs.dollar.helper.UserDataHelper.createValidUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

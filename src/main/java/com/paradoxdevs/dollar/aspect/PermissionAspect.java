@@ -3,7 +3,7 @@ package com.paradoxdevs.dollar.aspect;
 import com.paradoxdevs.dollar.aspect.annotation.WithPermission;
 import com.paradoxdevs.dollar.constant.PermissionType;
 import com.paradoxdevs.dollar.entity.Role;
-import com.paradoxdevs.dollar.exception.FeatureDisabledException;
+import com.paradoxdevs.dollar.error.exception.FeatureDisabledException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

@@ -3,7 +3,7 @@ package com.paradoxdevs.dollar.service.impl;
 import com.paradoxdevs.dollar.api.response.UserResponse;
 import com.paradoxdevs.dollar.entity.Role;
 import com.paradoxdevs.dollar.entity.User;
-import com.paradoxdevs.dollar.exception.ResourceNotFoundException;
+import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.UserMapper;
 import com.paradoxdevs.dollar.repository.UserRepository;
 import com.paradoxdevs.dollar.service.UserService;

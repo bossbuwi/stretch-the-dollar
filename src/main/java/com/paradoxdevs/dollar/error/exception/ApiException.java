@@ -1,5 +1,6 @@
-package com.paradoxdevs.dollar.exception;
+package com.paradoxdevs.dollar.error.exception;
 
+import com.paradoxdevs.dollar.error.ErrorCode;
 import lombok.Getter;
 
 @Getter
