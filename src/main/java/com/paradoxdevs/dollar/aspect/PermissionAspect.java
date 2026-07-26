@@ -77,15 +77,19 @@ public class PermissionAspect {
         }
     }
 
+    // TODO: UUID creation returns ArrayIndexOutOfBoundsException if there is no method params on the called method
+    //  For now, the work around is to put the UUID creation inside the initial if clause
+    //  and expect that the developer to not put the with self check permission recklessly on methods without params
     private void checkSelfPermission(WithPermission annotation, Object[] args, UUID userUuid) {
-        UUID inputUUid = UUID.fromString(args[0].toString());
         if (annotation.permission() == PermissionType.SELF) {
+            UUID inputUUid = UUID.fromString(args[0].toString());
             if (!inputUUid.equals(userUuid)) {
                 throw new AccessDeniedException("You are not allowed to perform this action");
             }
         }
     }
 
+    // TODO: Same with the checkSelfPermission method above
     private void checkNonSelfPermission(WithPermission annotation, Object[] args, UUID userUuid) {
         if (annotation.permission() == PermissionType.NONSELF) {
             UUID inputUUid = UUID.fromString(args[0].toString());

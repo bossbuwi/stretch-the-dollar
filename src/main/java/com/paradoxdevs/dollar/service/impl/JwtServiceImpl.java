@@ -4,7 +4,6 @@ import com.paradoxdevs.dollar.entity.User;
 import com.paradoxdevs.dollar.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.time.Clock;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,11 +67,11 @@ public class JwtServiceImpl implements JwtService {
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         long now = clock.millis();
         return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + EXPIRATION_TIME))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .claims(extraClaims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(now))
+                .expiration(new Date(now + EXPIRATION_TIME))
+                .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -96,16 +95,15 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setClock(() -> new Date(clock.millis()))
-                .setSigningKey(getSignInKey())
+        return Jwts.parser()
+                .clock(() -> new Date(clock.millis()))
+                .verifyWith(getSignInKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    private Key getSignInKey() {
+    private SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }

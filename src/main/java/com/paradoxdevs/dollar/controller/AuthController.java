@@ -37,6 +37,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    // TODO: This should only allow user to change their own password
     @PostMapping("/password/change")
     public ResponseEntity<Void> changePassword(@RequestBody @Valid PasswordRequest request) {
         authService.changePassword(request);
