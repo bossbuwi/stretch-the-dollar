@@ -1,7 +1,6 @@
 package com.paradoxdevs.dollar.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.jupiter.api.Test;
 
 import ch.qos.logback.classic.Logger;
@@ -11,7 +10,6 @@ import ch.qos.logback.core.read.ListAppender;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class DatabaseExecutionAspectTest {
 
@@ -25,13 +23,10 @@ public class DatabaseExecutionAspectTest {
 
         DummyRepo target = new DummyRepo();
 
-        MethodSignature signature = mock(MethodSignature.class);
-        when(signature.getName()).thenReturn("findById");
+        java.lang.reflect.Method m = DummyRepo.class.getMethod("findById", String.class);
+        TestDoubles.FakeMethodSignature signature = new TestDoubles.FakeMethodSignature(m);
 
-        ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
-        when(joinPoint.getSignature()).thenReturn(signature);
-        when(joinPoint.getTarget()).thenReturn(target);
-        when(joinPoint.proceed()).thenReturn("ok");
+        ProceedingJoinPoint joinPoint = TestDoubles.createProceedingJoinPointProxy(target, m, new Object[]{"1"}, "ok", null);
 
         Logger logger = (Logger) LoggerFactory.getLogger(DatabaseExecutionAspect.class);
         logger.setLevel(Level.DEBUG);
@@ -58,13 +53,8 @@ public class DatabaseExecutionAspectTest {
 
         DummyRepo target = new DummyRepo();
 
-        MethodSignature signature = mock(MethodSignature.class);
-        when(signature.getName()).thenReturn("findById");
-
-        ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
-        when(joinPoint.getSignature()).thenReturn(signature);
-        when(joinPoint.getTarget()).thenReturn(target);
-        when(joinPoint.proceed()).thenThrow(new RuntimeException("dbfail"));
+        java.lang.reflect.Method m2 = DummyRepo.class.getMethod("findById", String.class);
+        ProceedingJoinPoint joinPoint = TestDoubles.createProceedingJoinPointProxy(target, m2, new Object[]{"1"}, null, new RuntimeException("dbfail"));
 
         Logger logger = (Logger) LoggerFactory.getLogger(DatabaseExecutionAspect.class);
         logger.setLevel(Level.DEBUG);

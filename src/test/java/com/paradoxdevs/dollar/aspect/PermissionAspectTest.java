@@ -5,7 +5,6 @@ import com.paradoxdevs.dollar.constant.PermissionType;
 import com.paradoxdevs.dollar.entity.Role;
 import com.paradoxdevs.dollar.error.exception.FeatureDisabledException;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
@@ -65,15 +64,8 @@ public class PermissionAspectTest {
     }
 
     private ProceedingJoinPoint buildJoinPoint(Object target, String methodName, Class<?>[] paramTypes, Object[] args, Object proceedResult) throws Throwable {
-        ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
-        MethodSignature signature = mock(MethodSignature.class);
-        when(signature.getName()).thenReturn(methodName);
-        when(signature.getParameterTypes()).thenReturn(paramTypes);
-        when(joinPoint.getSignature()).thenReturn(signature);
-        when(joinPoint.getTarget()).thenReturn(target);
-        when(joinPoint.getArgs()).thenReturn(args);
-        when(joinPoint.proceed()).thenReturn(proceedResult);
-        return joinPoint;
+        java.lang.reflect.Method m = target.getClass().getMethod(methodName, paramTypes);
+        return TestDoubles.createProceedingJoinPointProxy(target, m, args, proceedResult, null);
     }
 
     @Test

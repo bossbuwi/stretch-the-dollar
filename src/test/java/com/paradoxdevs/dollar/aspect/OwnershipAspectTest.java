@@ -4,7 +4,6 @@ import com.paradoxdevs.dollar.aspect.annotation.CheckOwnership;
 import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityManager;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.AuditorAware;
@@ -14,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,16 +45,8 @@ public class OwnershipAspectTest {
     }
 
     private ProceedingJoinPoint buildJoinPoint(Object target, String methodName, Class<?>[] paramTypes, Object[] args) throws NoSuchMethodException {
-        ProceedingJoinPoint jp = mock(ProceedingJoinPoint.class);
-        MethodSignature sig = mock(MethodSignature.class);
-        when(sig.getMethod()).thenReturn(DummyService.class.getMethod("annotated", Long.class));
-        when(sig.getName()).thenReturn(methodName);
-        when(sig.getParameterTypes()).thenReturn(paramTypes);
-        when(jp.getSignature()).thenReturn(sig);
-        when(jp.getTarget()).thenReturn(target);
-        when(jp.getArgs()).thenReturn(args);
-        try { when(jp.proceed()).thenReturn(null); } catch (Throwable ignored) {}
-        return jp;
+        java.lang.reflect.Method m = DummyService.class.getMethod("annotated", Long.class);
+        return TestDoubles.createProceedingJoinPointProxy(target, m, args, null, null);
     }
 
     @Test

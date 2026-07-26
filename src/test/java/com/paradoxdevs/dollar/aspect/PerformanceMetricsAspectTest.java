@@ -2,7 +2,6 @@ package com.paradoxdevs.dollar.aspect;
 
 import com.paradoxdevs.dollar.aspect.annotation.PerformanceMetrics;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +11,6 @@ import ch.qos.logback.core.read.ListAppender;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class PerformanceMetricsAspectTest {
 
@@ -32,15 +30,10 @@ public class PerformanceMetricsAspectTest {
 
         DummyAnnotated target = new DummyAnnotated();
 
-        MethodSignature signature = mock(MethodSignature.class);
-        when(signature.getMethod()).thenReturn(DummyAnnotated.class.getMethod("annotated", String.class));
-        when(signature.getDeclaringTypeName()).thenReturn(DummyAnnotated.class.getName());
-        when(signature.getName()).thenReturn("annotated");
+        java.lang.reflect.Method m = DummyAnnotated.class.getMethod("annotated", String.class);
+        TestDoubles.FakeMethodSignature signature = new TestDoubles.FakeMethodSignature(m);
 
-        ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
-        when(joinPoint.getSignature()).thenReturn(signature);
-        when(joinPoint.getTarget()).thenReturn(target);
-        when(joinPoint.proceed()).thenReturn("ok");
+        ProceedingJoinPoint joinPoint = TestDoubles.createProceedingJoinPointProxy(target, m, new Object[]{"id"}, "ok", null);
 
         // attach list appender to capture logs
         Logger logger = (Logger) LoggerFactory.getLogger(PerformanceMetricsAspect.class);
@@ -68,15 +61,8 @@ public class PerformanceMetricsAspectTest {
 
         DummyAnnotated target = new DummyAnnotated();
 
-        MethodSignature signature = mock(MethodSignature.class);
-        when(signature.getMethod()).thenReturn(DummyAnnotated.class.getMethod("annotated", String.class));
-        when(signature.getDeclaringTypeName()).thenReturn(DummyAnnotated.class.getName());
-        when(signature.getName()).thenReturn("annotated");
-
-        ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
-        when(joinPoint.getSignature()).thenReturn(signature);
-        when(joinPoint.getTarget()).thenReturn(target);
-        when(joinPoint.proceed()).thenThrow(new RuntimeException("boom"));
+        java.lang.reflect.Method m2 = DummyAnnotated.class.getMethod("annotated", String.class);
+        ProceedingJoinPoint joinPoint = TestDoubles.createProceedingJoinPointProxy(target, m2, new Object[]{"id"}, null, new RuntimeException("boom"));
 
         // attach list appender to capture logs
         Logger logger = (Logger) LoggerFactory.getLogger(PerformanceMetricsAspect.class);

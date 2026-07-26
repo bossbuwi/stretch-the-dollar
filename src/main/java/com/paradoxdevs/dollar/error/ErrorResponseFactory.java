@@ -68,8 +68,10 @@ public class ErrorResponseFactory {
                 }
             }
 
-            // Cache the result (even if null, to avoid re-traversal)
-            resolvedCache.put(exceptionClass, strategy);
+            // Cache the result to speed up future lookups (only cache non-null strategies)
+            if (strategy != null) {
+                resolvedCache.put(exceptionClass, strategy);
+            }
         }
 
         if (strategy != null) {

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.paradoxdevs</groupId>
 	<artifactId>dollar</artifactId>
-	<version>0.8.3-alpha</version>
+	<version>0.8.4-alpha</version>
 	<name/>
 	<description/>
 	<url/>
@@ -161,6 +161,27 @@
 						-Xshare:off -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
 					</argLine>
 				</configuration>
+			</plugin>
+			<!-- JaCoCo for test coverage reporting -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.10</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+						    <goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+						    <goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
