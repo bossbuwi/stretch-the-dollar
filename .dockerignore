@@ -1,0 +1,10 @@
+.git
+.gitignore
+.idea
+.vscode
+target
+README.md
+bruno
+supabase
+*.log
+.env
