@@ -1,0 +1,29 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t dollar-app .
+
+      - name: Run container with test environment vars
+        run: |
+          docker run -d --name test-app -p 8080:8080 \
+            -e SPRING_DATASOURCE_URL="${{ vars.SPRING_DATASOURCE_URL }}" \
+            -e SPRING_DATASOURCE_USERNAME="${{ vars.SPRING_DATASOURCE_USERNAME }}" \
+            -e SPRING_DATASOURCE_PASSWORD="${{ vars.SPRING_DATASOURCE_PASSWORD }}" \
+            dollar-app
+          sleep 15
+          docker logs test-app
+          curl --retry 5 --retry-connrefused http://localhost:8080/actuator/health || true
+          docker stop test-app
