@@ -25,7 +25,7 @@ public class AuthenticationExceptionHandler extends BaseExceptionHandler<Authent
             log.error(iase.getMessage(), iase);
             return builder.build(request, ErrorCode.INTERNAL_SERVER_ERROR, null, null, null);
         }
-        log.error(ex.getMessage(), ex);
+        log.error(ex.getMessage());
         return builder.build(request, ErrorCode.UNAUTHORIZED, null, null, null);
     }
 }

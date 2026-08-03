@@ -20,7 +20,7 @@ public class ResourceNotFoundExceptionHandler extends BaseExceptionHandler<Resou
     @Override
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
         if (ex instanceof ResourceNotFoundException rnfe) {
-            log.error(rnfe.getMessage(), rnfe);
+            log.error(rnfe.getMessage());
             return builder.build(request, rnfe.getErrorCode(), rnfe.getMessage(), null, null);
         }
 

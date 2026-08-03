@@ -18,7 +18,7 @@ public class IllegalArgumentExceptionHandler extends BaseExceptionHandler<Illega
 
     @Override
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
-        log.error(ex.getMessage(), ex);
+        log.error(ex.getMessage());
         return builder.build(request, ErrorCode.REQUEST_VALIDATION_ERROR, ex.getMessage(), null, null);
     }
 }
