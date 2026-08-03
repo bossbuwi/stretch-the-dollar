@@ -23,12 +23,16 @@ public class JwtExceptionHandler extends BaseExceptionHandler<JwtException> {
     @Override
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
         if (ex instanceof ExpiredJwtException eje) {
+            log.error(eje.getMessage(), eje);
             return builder.build(request, ErrorCode.EXPIRED_TOKEN, null, null, null);
         } else if (ex instanceof MalformedJwtException mwe) {
+            log.error(mwe.getMessage(), mwe);
             return builder.build(request, ErrorCode.MALFORMED_JWT, null, null, null);
         } else if (ex instanceof SecurityException se) {
+            log.error(se.getMessage(), se);
             return builder.build(request, ErrorCode.INVALID_TOKEN_SIGNATURE, null, null, null);
         }
+        log.error(ex.getMessage(), ex);
         return builder.build(request, ErrorCode.UNAUTHENTICATED, null, null, null);
     }
 }

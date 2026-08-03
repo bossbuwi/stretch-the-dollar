@@ -20,6 +20,7 @@ public class PasswordExceptionHandler extends BaseExceptionHandler<PasswordExcep
     @Override
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
         if (ex instanceof PasswordException pe) {
+            log.error(pe.getMessage(), pe);
             return builder.build(request, pe.getErrorCode(), null, null, null);
         }
 

@@ -28,6 +28,7 @@ public class MethodArgumentNotValidExceptionHandler extends BaseExceptionHandler
             ArrayList<String> fieldErrors = manve.getBindingResult().getFieldErrors().stream()
                     .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                     .collect(Collectors.toCollection(ArrayList::new));
+            log.error(String.valueOf(fieldErrors));
             return builder.build(request, REQUEST_VALIDATION_ERROR, null, fieldErrors, null);
         }
 

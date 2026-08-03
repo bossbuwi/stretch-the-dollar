@@ -19,6 +19,7 @@ public class AccessDeniedExceptionHandler extends BaseExceptionHandler<AccessDen
 
     @Override
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
+        log.error(ex.getMessage(), ex);
         return builder.build(request, ErrorCode.INVALID_USER, null, null, null);
     }
 }

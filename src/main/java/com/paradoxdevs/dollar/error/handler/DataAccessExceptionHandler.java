@@ -19,6 +19,7 @@ public class DataAccessExceptionHandler extends BaseExceptionHandler<DataAccessE
 
     @Override
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
+        log.error(ex.getMessage(), ex);
         return builder.build(request, ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage(), null, null);
     }
 }
