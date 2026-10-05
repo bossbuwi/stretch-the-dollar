@@ -1,2 +1,7 @@
 runtime: java21
 instance_class: F1
+env_variables:
+  SPRING_PROFILES_ACTIVE: "postgres"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://136.65.241.38:5432/test"
+  SPRING_DATASOURCE_USERNAME: "admin"
+  SPRING_DATASOURCE_PASSWORD: "password"
