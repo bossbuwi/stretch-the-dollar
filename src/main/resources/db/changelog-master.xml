@@ -7,5 +7,6 @@
 
     <include file="db/changes/01-create-users-table.xml"/>
     <include file="db/changes/02-create-user-roles-table.xml"/>
+    <include file="db/changes/03-create-transactions-table.xml"/>
 
 </databaseChangeLog>
