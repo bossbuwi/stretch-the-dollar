@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Changeset 2: Create the user_roles table -->
+    <changeSet id="2" author="paradoxdevs">
+        <createTable tableName="user_roles">
+            <!-- Foreign key referencing users.uuid -->
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Using VARCHAR(50) instead of a custom ENUM type to keep H2 tests passing -->
+            <column name="role" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- Changeset 3: Add a composite primary key -->
+    <changeSet id="3" author="paradoxdevs">
+        <addPrimaryKey tableName="user_roles"
+                       columnNames="user_id, role"
+                       constraintName="pk_user_roles"/>
+    </changeSet>
+
+    <!-- Changeset 4: Add the foreign key constraint -->
+    <changeSet id="4" author="paradoxdevs">
+        <addForeignKeyConstraint baseTableName="user_roles"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="uuid"
+                                 constraintName="fk_user_roles_user_id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
