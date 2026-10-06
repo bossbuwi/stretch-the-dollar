@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <changeSet id="1" author="paradoxdevs">
+    <changeSet id="20261005-1-create-users" author="paradoxdevs">
         <createTable tableName="users">
 
             <column name="id" type="BIGINT" autoIncrement="true">

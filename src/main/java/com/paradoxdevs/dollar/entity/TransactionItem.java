@@ -20,19 +20,21 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "transactions")
+@Table(name = "transaction_items")
 @EntityListeners(AuditingEntityListener.class)
-public class Transaction {
+public class TransactionItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true, nullable = false)
     private String name;
     private String description;
-    private Long transactionItemId;
-    private String transactionType;
-    @Column(precision = 19, scale = 4, nullable = false)
-    private BigDecimal amount;
     private String currency;
+    /**
+     * Positive = spending cap; negative = required minimum / credit floor.
+     */
+    @Column(precision = 19, scale = 4, nullable = false)
+    private BigDecimal amountLimit;
     @CreatedBy
     @Column(updatable = false, nullable = false)
     private UUID createdBy;

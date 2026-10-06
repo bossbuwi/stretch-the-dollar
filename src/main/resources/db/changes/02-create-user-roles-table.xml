@@ -6,7 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <!-- Changeset 2: Create the user_roles table -->
-    <changeSet id="2" author="paradoxdevs">
+    <changeSet id="20261005-2-create-user-roles" author="paradoxdevs">
         <createTable tableName="user_roles">
             <!-- Foreign key referencing users.uuid -->
             <column name="user_id" type="uuid">
@@ -21,14 +21,14 @@
     </changeSet>
 
     <!-- Changeset 3: Add a composite primary key -->
-    <changeSet id="3" author="paradoxdevs">
+    <changeSet id="20261005-3-add-composite-primary-key-to-user-roles" author="paradoxdevs">
         <addPrimaryKey tableName="user_roles"
                        columnNames="user_id, role"
                        constraintName="pk_user_roles"/>
     </changeSet>
 
     <!-- Changeset 4: Add the foreign key constraint -->
-    <changeSet id="4" author="paradoxdevs">
+    <changeSet id="20261005-4-add-fk-constraint-to-user-roles" author="paradoxdevs">
         <addForeignKeyConstraint baseTableName="user_roles"
                                  baseColumnNames="user_id"
                                  referencedTableName="users"
