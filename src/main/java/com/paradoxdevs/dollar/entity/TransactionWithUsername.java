@@ -7,6 +7,7 @@ import lombok.Data;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
@@ -34,7 +35,7 @@ public class TransactionWithUsername {
     private String name;
     private String description;
     private String transactionType;
-    private Double amount;
+    private BigDecimal amount;
     private String currency;
     @Column(name = "created_by_username")
     private String createdByUsername;
