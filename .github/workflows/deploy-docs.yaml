@@ -4,8 +4,8 @@ on:
   push:
     branches: ["master"] # Or "main" if that's your default branch
     paths:
-      - 'docs/**' # <-- This is the key. Only triggers if files in the docs/ folder change
-  workflow_dispatch: # Allows you to manually run this workflow from the Actions tab
+      - 'docs/**' # Only triggers if files in the docs/ folder change
+  workflow_dispatch: # Allows you to manually run this workflow
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -13,7 +13,7 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# Allow only one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -28,21 +28,18 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # If you are using a static site generator (like Jekyll, MkDocs, Hugo, etc.),
-      # add your build steps here. For example, for Jekyll:
-      # - name: Build with Jekyll
-      #   uses: actions/jekyll-build-pages@v1
-      #   with:
-      #     source: ./docs
-      #     destination: ./_site
+      # This is the magic step: It converts your Markdown to HTML
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # The path to your documentation files.
-          # If you have a build step, this should point to the output directory (e.g., ./_site).
-          # If your docs are plain HTML/CSS/JS, point it directly to './docs'.
-          path: './docs'
+          # Point this to the Jekyll output directory, NOT the docs folder
+          path: './_site'
 
   deploy:
     environment:
