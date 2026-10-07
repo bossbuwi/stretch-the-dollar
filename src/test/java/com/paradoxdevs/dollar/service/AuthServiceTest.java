@@ -271,7 +271,7 @@ public class AuthServiceTest {
             User user = createValidUser();
             String encodedNewPassword = "encodedNewPassword123";
 
-            when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+            when(userRepository.findByUsernameWithRoles(USERNAME)).thenReturn(Optional.of(user));
             when(passwordEncoder.matches(PASSWORD, PASSWORD)).thenReturn(true);
             when(passwordEncoder.matches("newPassword123", PASSWORD)).thenReturn(false);
             when(passwordEncoder.encode("newPassword123")).thenReturn(encodedNewPassword);
@@ -280,7 +280,7 @@ public class AuthServiceTest {
             authService.changePassword(request);
 
             assertEquals(encodedNewPassword, user.getPassword());
-            verify(userRepository, times(1)).findByUsername(USERNAME);
+            verify(userRepository, times(1)).findByUsernameWithRoles(USERNAME);
             verify(passwordEncoder, times(1)).encode("newPassword123");
             verify(userRepository, times(1)).save(user);
         }
@@ -294,12 +294,12 @@ public class AuthServiceTest {
             request.setNewPassword("newPassword123");
             request.setConfirmNewPassword("newPassword123");
 
-            when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.empty());
+            when(userRepository.findByUsernameWithRoles(USERNAME)).thenReturn(Optional.empty());
 
             ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> authService.changePassword(request));
 
-            verify(userRepository, times(1)).findByUsername(USERNAME);
+            verify(userRepository, times(1)).findByUsernameWithRoles(USERNAME);
             verifyNoInteractions(passwordEncoder);
         }
 
@@ -314,13 +314,13 @@ public class AuthServiceTest {
 
             User user = createValidUser();
 
-            when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+            when(userRepository.findByUsernameWithRoles(USERNAME)).thenReturn(Optional.of(user));
             when(passwordEncoder.matches("wrongPassword", user.getPassword())).thenReturn(false);
 
             PasswordException exception = assertThrows(PasswordException.class,
                     () -> authService.changePassword(request));
 
-            verify(userRepository, times(1)).findByUsername(USERNAME);
+            verify(userRepository, times(1)).findByUsernameWithRoles(USERNAME);
             verify(passwordEncoder, times(1)).matches("wrongPassword", user.getPassword());
             verifyNoMoreInteractions(passwordEncoder);
         }
@@ -336,7 +336,7 @@ public class AuthServiceTest {
 
             User user = createValidUser();
 
-            when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+            when(userRepository.findByUsernameWithRoles(USERNAME)).thenReturn(Optional.of(user));
             when(passwordEncoder.matches(PASSWORD, user.getPassword())).thenReturn(true);
             when(passwordEncoder.matches(PASSWORD, user.getPassword())).thenReturn(true);
 
@@ -344,7 +344,7 @@ public class AuthServiceTest {
                     () -> authService.changePassword(request));
 
             assertEquals(ErrorCode.OLD_NEW_PASSWORD_MATCH, exception.getErrorCode());
-            verify(userRepository, times(1)).findByUsername(USERNAME);
+            verify(userRepository, times(1)).findByUsernameWithRoles(USERNAME);
             verify(passwordEncoder, times(2)).matches(PASSWORD, user.getPassword());
         }
 
@@ -359,7 +359,7 @@ public class AuthServiceTest {
 
             User user = createValidUser();
 
-            when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+            when(userRepository.findByUsernameWithRoles(USERNAME)).thenReturn(Optional.of(user));
             when(passwordEncoder.matches(PASSWORD, user.getPassword())).thenReturn(true);
             when(passwordEncoder.matches("newPassword123", user.getPassword())).thenReturn(false);
 
@@ -367,7 +367,7 @@ public class AuthServiceTest {
                     () -> authService.changePassword(request));
 
             assertEquals(ErrorCode.PASSWORDS_DONT_MATCH, exception.getErrorCode());
-            verify(userRepository, times(1)).findByUsername(USERNAME);
+            verify(userRepository, times(1)).findByUsernameWithRoles(USERNAME);
             verify(userRepository, times(0)).save(any());
         }
 
@@ -381,13 +381,13 @@ public class AuthServiceTest {
             request.setConfirmNewPassword("newPassword123");
 
             RuntimeException repositoryException = new RuntimeException("Database connection failed");
-            when(userRepository.findByUsername(USERNAME)).thenThrow(repositoryException);
+            when(userRepository.findByUsernameWithRoles(USERNAME)).thenThrow(repositoryException);
 
             RuntimeException exception = assertThrows(RuntimeException.class,
                     () -> authService.changePassword(request));
 
             assertEquals("Database connection failed", exception.getMessage());
-            verify(userRepository, times(1)).findByUsername(USERNAME);
+            verify(userRepository, times(1)).findByUsernameWithRoles(USERNAME);
         }
     }
 

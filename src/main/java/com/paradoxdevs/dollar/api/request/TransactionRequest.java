@@ -18,6 +18,8 @@ public class TransactionRequest {
     @NotBlank(message = "Transaction name is required.")
     private String transactionName;
     private String description;
+    @NotBlank(message = "Transaction item is required.")
+    private Long transactionItemId;
     @NotBlank(message = "Transaction type is required.")
     private String transactionType;
     @NotNull

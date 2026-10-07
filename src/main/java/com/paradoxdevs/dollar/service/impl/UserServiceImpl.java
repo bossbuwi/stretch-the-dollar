@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
+        return userRepository.findByUsernameWithRoles(username)
                 .map(userMapper::entityToResponse)
                 .orElseThrow(ResourceNotFoundException::new);
     }
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserByUuid(String uuid) {
         UUID queryUuid = UUID.fromString(uuid);
-        return userRepository.findByUuid(queryUuid)
+        return userRepository.findByUuidWithRoles(queryUuid)
                 .map(userMapper::entityToResponse)
                 .orElseThrow(ResourceNotFoundException::new);
     }
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void resetUser(String uuid) {
         UUID queryUuid = UUID.fromString(uuid);
-        User user = userRepository.findByUuid(queryUuid).orElseThrow(ResourceNotFoundException::new);
+        User user = userRepository.findByUuidWithRoles(queryUuid).orElseThrow(ResourceNotFoundException::new);
         user.getRoles().clear();
         user.addRole(Role.USER);
         userRepository.save(user);
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
     private void modifyRole(String uuid, Role role, boolean add) {
         UUID queryUuid = UUID.fromString(uuid);
-        User user = userRepository.findByUuid(queryUuid).orElseThrow(ResourceNotFoundException::new);
+        User user = userRepository.findByUuidWithRoles(queryUuid).orElseThrow(ResourceNotFoundException::new);
         if (add) {
             user.addRole(role);
         } else {
