@@ -3,6 +3,8 @@ layout: default
 title: Home
 ---
 
+### Below instructions are no  longer updated. New instructions are still being made. Please be patient.
+
 # Getting Started
 
 I am doing development on this app on my SteamDeck. Yes, I have a PC,
