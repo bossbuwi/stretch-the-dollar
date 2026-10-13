@@ -16,6 +16,7 @@ public enum ErrorCode {
     INVALID_USER(109, "User is not allowed to perform this operation."),
     OLD_NEW_PASSWORD_MATCH(110, "New password cannot be the same as the old password."),
     PASSWORDS_DONT_MATCH(111, "New passwords don't match."),
+    MALFORMED_JSON_REQUEST(112, "Request body is malformed, please try again."),
     FEATURE_DISABLED(998, "Feature is currently disabled."),
     INTERNAL_SERVER_ERROR(999, "Internal server error."),;
 
