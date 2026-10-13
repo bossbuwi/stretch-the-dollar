@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getUsers() {
         return userRepository.findAll().stream()
                 .map(userMapper::entityToResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
