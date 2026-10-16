@@ -185,12 +185,11 @@ together with some useful extensions.
 5. After the installation is finished, check if the Postgres service is okay, run either  
 ```
 sudo systemctl status postgresql
-
 or
-
 pg_lsclusters
 ```
-You should see `active (exited)` if you run the first one or the actual `postgres cluster` if you run the second one.
+
+You should see `active (exited)` if you run the first one or the actual __postgres cluster__ if you run the second one.
 
 ### Securing the Postgres Database
 1. The __postgres__ user is the default superuser. By default, there is no password. A __strong__ password needs to be set.
