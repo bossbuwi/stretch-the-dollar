@@ -182,7 +182,7 @@ and click the SSH button on the right hand side under the Connect column.
 3. Run command sudo apt update to update the system's package list.
 4. Run sudo apt install PostgreSQL postgresql-contrib -y to install the Postgres database server
 together with some useful extensions.
-5. After the installation is finished, check if the Postgres service is okay, run either
+5. After the installation is finished, check if the Postgres service is okay, run either  
 ```
 sudo systemctl status postgresql
 
