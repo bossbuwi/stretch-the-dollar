@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -28,11 +29,11 @@ public class Transaction {
     private Long id;
     private String name;
     private String description;
-    private Long transactionItemId;
-    private String transactionType;
+    private Long transactionCategoryId;
     @Column(precision = 19, scale = 4, nullable = false)
     private BigDecimal amount;
     private String currency;
+    private LocalDate transactionDate;
     @CreatedBy
     @Column(updatable = false, nullable = false)
     private UUID createdBy;

@@ -16,12 +16,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class TransactionRequest {
     @NotBlank(message = "Transaction name is required.")
-    private String transactionName;
+    private String name;
     private String description;
-    @NotBlank(message = "Transaction item is required.")
-    private Long transactionItemId;
-    @NotBlank(message = "Transaction type is required.")
-    private String transactionType;
+    @NotNull(message = "Transaction category is required")
+    private Long transactionCategoryId;
+    private String transactionDate;
     @NotNull
     @DecimalMin(value = "0", message = "Amount must at least be 0.")
     private BigDecimal amount;

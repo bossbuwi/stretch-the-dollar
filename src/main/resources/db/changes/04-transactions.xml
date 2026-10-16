@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd">
+
+    <changeSet id="4-create-transactions-table" author="paradox-devs">
+        <createTable tableName="transactions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="currency" type="VARCHAR(255)"/>
+            <column name="amount" type="NUMERIC(19,4)"/>
+            <column name="transaction_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_category_id" type="BIGINT"/>
+            <column name="created_by" type="UUID"/>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="updated_by" type="UUID"/>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="transactions" baseColumnNames="transaction_category_id"
+                                 referencedTableName="transaction_categories" referencedColumnNames="id"
+                                 constraintName="fk_transaction_item_types_id_transactions"/>
+
+        <addForeignKeyConstraint baseTableName="transactions" baseColumnNames="created_by"
+                                 referencedTableName="users" referencedColumnNames="uuid"
+                                 constraintName="fk_users_uuid_transactions_created_by"/>
+
+        <addForeignKeyConstraint baseTableName="transactions" baseColumnNames="updated_by"
+                                 referencedTableName="users" referencedColumnNames="uuid"
+                                 constraintName="fk_users_uuid_transactions_updated_by"/>
+    </changeSet>
+
+    <!-- Adding an index on the date column to make monthly grouping queries fast -->
+    <changeSet id="4-add-index-to-transactions-date" author="your_name">
+        <createIndex tableName="transactions" indexName="idx_transactions_date">
+            <column name="transaction_date"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
