@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @Builder
 @Data
@@ -13,8 +15,9 @@ public class TransactionResponse {
     private long transactionId;
     private String transactionName;
     private String description;
+    private String transactionItem;
     private String transactionType;
-    private double amount;
+    private BigDecimal amount;
     private String currency;
     private String createdBy;
     private String createdAt;

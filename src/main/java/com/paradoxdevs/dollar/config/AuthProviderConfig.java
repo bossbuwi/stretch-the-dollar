@@ -24,7 +24,7 @@ public class AuthProviderConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByUsername(username)
+        return username -> repository.findByUsernameWithRoles(username)
                 .orElseThrow(() -> new UsernameNotFoundException(RESOURCE_NOT_FOUND.getErrorMessage()));
     }
 

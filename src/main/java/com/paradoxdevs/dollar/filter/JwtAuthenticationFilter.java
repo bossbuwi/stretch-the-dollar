@@ -51,6 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtService.isTokenValid(jwt)) {
                 final String username = jwtService.extractUsername(jwt);
                 final String uuid = jwtService.extractUuid(jwt);
+                // TODO: Change to a UserPrincipal record
                 Map<String, Object> principal = new HashMap<>();
                 principal.put("username", username);
                 principal.put("uuid", uuid);

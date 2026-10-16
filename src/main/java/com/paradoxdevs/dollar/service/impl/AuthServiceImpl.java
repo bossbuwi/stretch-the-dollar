@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public void changePassword(PasswordRequest request) {
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(ResourceNotFoundException::new);
+        User user = userRepository.findByUsernameWithRoles(request.getUsername()).orElseThrow(ResourceNotFoundException::new);
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new PasswordException();

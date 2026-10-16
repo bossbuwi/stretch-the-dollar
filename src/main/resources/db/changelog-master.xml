@@ -5,9 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <include file="db/changes/01-create-users-table.xml"/>
-    <include file="db/changes/02-create-user-roles-table.xml"/>
-    <include file="db/changes/03-create-transaction-items-table.xml"/>
-    <include file="/db/changes/04-create-transactions-table.xml"/>
+    <include file="db/changes/01-users.xml"/>
+    <include file="db/changes/02-user-roles.xml"/>
+    <include file="db/changes/03-transaction-categories.xml"/>
+    <include file="db/changes/04-transactions.xml"/>
+    <include file="db/changes/05-transaction-details-view.xml"/>
 
 </databaseChangeLog>

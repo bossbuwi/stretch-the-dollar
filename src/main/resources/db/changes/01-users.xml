@@ -3,30 +3,22 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd">
 
-    <changeSet id="20261005-1-create-users" author="paradoxdevs">
+    <changeSet id="1-create-users-table" author="your_name">
         <createTable tableName="users">
-
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-
-            <!-- Changed from 'text' to 'VARCHAR(50)' -->
             <column name="username" type="VARCHAR(50)">
-                <constraints nullable="false" unique="true"/>
+                <constraints nullable="false" unique="true" uniqueConstraintName="uq_users_username"/>
             </column>
-
-            <!-- Changed from 'text' to 'VARCHAR(255)' -->
             <column name="password" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-
-            <!-- 'uuid' type is supported by both PostgreSQL and H2 -->
-            <column name="uuid" type="uuid">
-                <constraints nullable="false" unique="true"/>
+            <column name="uuid" type="UUID">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uq_users_uuid"/>
             </column>
-
         </createTable>
     </changeSet>
 

@@ -141,7 +141,7 @@ public class UserServiceTest {
         @DisplayName("Should return user if username exists.")
         void shouldReturnUserWhenUsernameExists() {
             User user = createValidUser();
-            when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+            when(userRepository.findByUsernameWithRoles(user.getUsername())).thenReturn(Optional.of(user));
 
             UserResponse result = userService.getUserByUsername(user.getUsername());
 
@@ -158,7 +158,7 @@ public class UserServiceTest {
         @DisplayName("Should return user if uuid exists.")
         void shouldReturnUserWhenUuidExists() {
             User user = createValidUser();
-            when(userRepository.findByUuid(user.getUuid())).thenReturn(Optional.of(user));
+            when(userRepository.findByUuidWithRoles(user.getUuid())).thenReturn(Optional.of(user));
 
             UserResponse result = userService.getUserByUuid(user.getUuid().toString());
 
@@ -175,7 +175,7 @@ public class UserServiceTest {
         @DisplayName("Should add admin role to user.")
         void shouldAddAdminRoleToUser() {
             User user = createValidUser();
-            when(userRepository.findByUuid(user.getUuid())).thenReturn(Optional.of(user));
+            when(userRepository.findByUuidWithRoles(user.getUuid())).thenReturn(Optional.of(user));
             assertTrue(user.getRoles().contains(Role.USER));
             assertFalse(user.getRoles().contains(Role.ADMIN));
 
@@ -195,7 +195,7 @@ public class UserServiceTest {
         void shouldRemoveAdminRoleFromUser() {
             User user = createValidUser();
             user.addRole(Role.ADMIN);
-            when(userRepository.findByUuid(user.getUuid())).thenReturn(Optional.of(user));
+            when(userRepository.findByUuidWithRoles(user.getUuid())).thenReturn(Optional.of(user));
             assertTrue(user.getRoles().contains(Role.USER));
             assertTrue(user.getRoles().contains(Role.ADMIN));
 
@@ -214,7 +214,7 @@ public class UserServiceTest {
         @DisplayName("Should add restricted role to user.")
         void shouldAddRestrictedRoleToUser() {
             User user = createValidUser();
-            when(userRepository.findByUuid(user.getUuid())).thenReturn(Optional.of(user));
+            when(userRepository.findByUuidWithRoles(user.getUuid())).thenReturn(Optional.of(user));
             assertTrue(user.getRoles().contains(Role.USER));
             assertFalse(user.getRoles().contains(Role.RESTRICTED));
 
@@ -234,7 +234,7 @@ public class UserServiceTest {
         void shouldRemoveAdminRoleFromUser() {
             User user = createValidUser();
             user.addRole(Role.RESTRICTED);
-            when(userRepository.findByUuid(user.getUuid())).thenReturn(Optional.of(user));
+            when(userRepository.findByUuidWithRoles(user.getUuid())).thenReturn(Optional.of(user));
             assertTrue(user.getRoles().contains(Role.USER));
             assertTrue(user.getRoles().contains(Role.RESTRICTED));
 
@@ -253,7 +253,7 @@ public class UserServiceTest {
         @DisplayName("Should add banned role to user.")
         void shouldAddBannedRoleToUser() {
             User user = createValidUser();
-            when(userRepository.findByUuid(user.getUuid())).thenReturn(Optional.of(user));
+            when(userRepository.findByUuidWithRoles(user.getUuid())).thenReturn(Optional.of(user));
             assertTrue(user.getRoles().contains(Role.USER));
             assertFalse(user.getRoles().contains(Role.BANNED));
 
@@ -273,7 +273,7 @@ public class UserServiceTest {
         void shouldRemoveAdminRoleFromUser() {
             User user = createValidUser();
             user.addRole(Role.BANNED);
-            when(userRepository.findByUuid(user.getUuid())).thenReturn(Optional.of(user));
+            when(userRepository.findByUuidWithRoles(user.getUuid())).thenReturn(Optional.of(user));
             assertTrue(user.getRoles().contains(Role.USER));
             assertTrue(user.getRoles().contains(Role.BANNED));
 
@@ -301,7 +301,7 @@ public class UserServiceTest {
             assertTrue(user.getRoles().contains(Role.RESTRICTED));
             assertTrue(user.getRoles().contains(Role.BANNED));
 
-            when(userRepository.findByUuid(user.getUuid())).thenReturn(Optional.of(user));
+            when(userRepository.findByUuidWithRoles(user.getUuid())).thenReturn(Optional.of(user));
 
             userService.resetUser(user.getUuid().toString());
 
