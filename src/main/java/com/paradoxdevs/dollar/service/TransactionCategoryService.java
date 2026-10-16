@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface TransactionCategoryService {
     List<TransactionCategoryResponse> getTransactionItems();
+    TransactionCategoryResponse getTransactionItemById(Long id);
     TransactionCategoryResponse addTransactionItem(TransactionCategoryRequest transactionCategoryRequest);
 }

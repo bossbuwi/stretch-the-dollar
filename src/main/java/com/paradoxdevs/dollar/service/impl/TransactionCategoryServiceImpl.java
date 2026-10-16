@@ -3,6 +3,7 @@ package com.paradoxdevs.dollar.service.impl;
 import com.paradoxdevs.dollar.api.request.TransactionCategoryRequest;
 import com.paradoxdevs.dollar.api.response.TransactionCategoryResponse;
 import com.paradoxdevs.dollar.entity.TransactionCategory;
+import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionCategoryMapper;
 import com.paradoxdevs.dollar.repository.TransactionCategoryRepository;
 import com.paradoxdevs.dollar.service.TransactionCategoryService;
@@ -30,6 +31,13 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
                 .stream()
                 .map(transactionCategoryMapper::entityToResponse)
                 .toList();
+    }
+
+    @Override
+    public TransactionCategoryResponse getTransactionItemById(Long id) {
+        return transactionCategoryRepository.findById(id)
+                .map(transactionCategoryMapper::entityToResponse)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Transactional

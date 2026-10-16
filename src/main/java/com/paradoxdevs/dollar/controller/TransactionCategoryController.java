@@ -36,8 +36,8 @@ public class TransactionCategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionCategoryResponse> getTransactionItemById(@PathVariable String id) {
-        return null;
+    public ResponseEntity<TransactionCategoryResponse> getTransactionItemById(@PathVariable Long id) {
+        return ResponseEntity.ok(transactionCategoryService.getTransactionItemById(id));
     }
 
     @PostMapping("/")
