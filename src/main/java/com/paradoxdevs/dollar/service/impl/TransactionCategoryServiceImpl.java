@@ -5,8 +5,11 @@ import com.paradoxdevs.dollar.api.response.TransactionCategoryResponse;
 import com.paradoxdevs.dollar.aspect.annotation.CheckOwnership;
 import com.paradoxdevs.dollar.entity.TransactionCategory;
 import com.paradoxdevs.dollar.entity.view.TransactionCategoryDetails;
+import com.paradoxdevs.dollar.error.ErrorCode;
+import com.paradoxdevs.dollar.error.exception.BudgetRuleException;
 import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionCategoryMapper;
+import com.paradoxdevs.dollar.repository.CategoryBudgetRepository;
 import com.paradoxdevs.dollar.repository.TransactionCategoryRepository;
 import com.paradoxdevs.dollar.repository.view.TransactionCategoryDetailsView;
 import com.paradoxdevs.dollar.service.TransactionCategoryService;
@@ -20,13 +23,16 @@ import java.util.List;
 @Service
 public class TransactionCategoryServiceImpl implements TransactionCategoryService {
     private final TransactionCategoryRepository transactionCategoryRepository;
+    private final CategoryBudgetRepository categoryBudgetRepository;
     private final TransactionCategoryDetailsView transactionCategoryDetailsView;
     private final TransactionCategoryMapper transactionCategoryMapper;
 
     public TransactionCategoryServiceImpl(TransactionCategoryRepository transactionCategoryRepository,
+                                          CategoryBudgetRepository categoryBudgetRepository,
                                           TransactionCategoryDetailsView transactionCategoryDetailsView,
                                           TransactionCategoryMapper transactionCategoryMapper) {
         this.transactionCategoryRepository = transactionCategoryRepository;
+        this.categoryBudgetRepository = categoryBudgetRepository;
         this.transactionCategoryDetailsView = transactionCategoryDetailsView;
         this.transactionCategoryMapper = transactionCategoryMapper;
     }
@@ -62,6 +68,11 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
     public TransactionCategoryResponse updateTransactionItem(Long id, TransactionCategoryRequest request) {
         TransactionCategory category = transactionCategoryRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
+        if (!"EXPENSE".equalsIgnoreCase(request.getTransactionType())
+                && categoryBudgetRepository.existsByTransactionCategoryId(id)) {
+            throw new BudgetRuleException(ErrorCode.REQUEST_VALIDATION_ERROR,
+                    "A category with budgets must remain an expense category. Delete its budgets before changing its type.");
+        }
         transactionCategoryMapper.updateEntityFromRequest(request, category);
         TransactionCategory saved = transactionCategoryRepository.saveAndFlush(category);
         TransactionCategoryDetails details = transactionCategoryDetailsView.findById(saved.getId())

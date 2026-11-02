@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd">
+
+    <changeSet id="9-create-category-budgets" author="paradox-devs">
+        <createTable tableName="category_budgets">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="transaction_category_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="budget_amount" type="NUMERIC(19,4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recurrence_frequency" type="VARCHAR(20)"/>
+            <column name="custom_period_days" type="INTEGER"/>
+            <column name="created_by" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="category_budgets" baseColumnNames="transaction_category_id"
+                                 referencedTableName="transaction_categories" referencedColumnNames="id"
+                                 constraintName="fk_category_budgets_transaction_category"/>
+        <addForeignKeyConstraint baseTableName="category_budgets" baseColumnNames="created_by"
+                                 referencedTableName="users" referencedColumnNames="uuid"
+                                 constraintName="fk_category_budgets_created_by"/>
+        <addForeignKeyConstraint baseTableName="category_budgets" baseColumnNames="updated_by"
+                                 referencedTableName="users" referencedColumnNames="uuid"
+                                 constraintName="fk_category_budgets_updated_by"/>
+        <createIndex tableName="category_budgets" indexName="idx_category_budgets_category_dates">
+            <column name="transaction_category_id"/>
+            <column name="start_date"/>
+            <column name="end_date"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="category_budgets"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -6,6 +6,7 @@ import com.paradoxdevs.dollar.entity.TransactionCategory;
 import com.paradoxdevs.dollar.entity.view.TransactionCategoryDetails;
 import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionCategoryMapper;
+import com.paradoxdevs.dollar.repository.CategoryBudgetRepository;
 import com.paradoxdevs.dollar.repository.TransactionCategoryRepository;
 import com.paradoxdevs.dollar.repository.view.TransactionCategoryDetailsView;
 import com.paradoxdevs.dollar.service.impl.TransactionCategoryServiceImpl;
@@ -37,6 +38,8 @@ import static org.mockito.Mockito.when;
 class TransactionCategoryServiceTest {
     @Mock
     private TransactionCategoryRepository transactionCategoryRepository;
+    @Mock
+    private CategoryBudgetRepository categoryBudgetRepository;
     @Mock
     private TransactionCategoryDetailsView transactionCategoryDetailsView;
     @Spy

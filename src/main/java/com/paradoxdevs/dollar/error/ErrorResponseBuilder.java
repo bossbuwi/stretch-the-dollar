@@ -60,6 +60,8 @@ public class ErrorResponseBuilder {
                     -> HttpStatus.BAD_REQUEST;
             case RESOURCE_NOT_FOUND
                     -> HttpStatus.NOT_FOUND;
+            case BUDGET_PERIOD_OVERLAP
+                    -> HttpStatus.CONFLICT;
             case RESOURCE_ALREADY_EXISTS
                     -> HttpStatus.UNPROCESSABLE_CONTENT;
             case FEATURE_DISABLED
