@@ -23,7 +23,7 @@ import java.util.List;
 @PerformanceMetrics
 @Slf4j
 @RestController
-@RequestMapping("/transaction-item")
+@RequestMapping("/transaction-category")
 public class TransactionCategoryController {
     private final TransactionCategoryService transactionCategoryService;
 
