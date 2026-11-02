@@ -4,8 +4,10 @@ import com.paradoxdevs.dollar.api.request.TransactionRequest;
 import com.paradoxdevs.dollar.api.response.TransactionDetailsResponse;
 import com.paradoxdevs.dollar.entity.Transaction;
 import com.paradoxdevs.dollar.entity.view.TransactionDetails;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 import java.time.Instant;
@@ -19,6 +21,15 @@ public interface TransactionMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "transactionDate", source = "transactionDate", qualifiedByName = "stringToLocalDate")
     Transaction requestToEntity(TransactionRequest request);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "description", source = "description")
+    @Mapping(target = "transactionCategoryId", source = "transactionCategoryId")
+    @Mapping(target = "transactionDate", source = "transactionDate", qualifiedByName = "stringToLocalDate")
+    @Mapping(target = "amount", source = "amount")
+    @Mapping(target = "currency", source = "currency")
+    void updateEntityFromRequest(TransactionRequest request, @MappingTarget Transaction transaction);
 
     @Mapping(target = "transactionDate", source = "transactionDate", qualifiedByName = "localDateToString")
     @Mapping(target = "createdBy", source = "createdByUsername")
