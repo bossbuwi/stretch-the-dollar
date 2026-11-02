@@ -4,6 +4,7 @@ import com.paradoxdevs.dollar.api.response.ErrorResponse;
 import com.paradoxdevs.dollar.error.ErrorCode;
 import com.paradoxdevs.dollar.error.ErrorResponseBuilder;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -33,6 +34,7 @@ public class AccessDeniedExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should return invalid user error for access denied exception")
     void shouldReturnInvalidUserErrorForAccessDeniedException() {
         // Given
         AccessDeniedException ex = new AccessDeniedException("Access is denied for this resource");
@@ -60,6 +62,7 @@ public class AccessDeniedExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should propagate response entity from builder")
     void shouldPropagateResponseEntityFromBuilder() {
         // Given
         AccessDeniedException ex = new AccessDeniedException("Forbidden");
@@ -85,6 +88,7 @@ public class AccessDeniedExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should ignore exception message and always return invalid user")
     void shouldIgnoreExceptionMessageAndAlwaysReturnInvalidUser() {
         // Given
         AccessDeniedException ex = new AccessDeniedException("Some specific denial reason");
@@ -108,6 +112,7 @@ public class AccessDeniedExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle exception with null message gracefully")
     void shouldHandleExceptionWithNullMessageGracefully() {
         // Given
         AccessDeniedException ex = new AccessDeniedException(null);

@@ -5,6 +5,7 @@ import com.paradoxdevs.dollar.error.ErrorCode;
 import com.paradoxdevs.dollar.error.ErrorResponseBuilder;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -40,6 +41,7 @@ public class DataIntegrityViolationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should extract column and duplicated value from postgres exception")
     void shouldExtractColumnAndDuplicatedValueFromPostgresException() {
         // Given
         String postgresError = "ERROR: duplicate key value violates unique constraint \"uk_email\"\n" +
@@ -73,6 +75,7 @@ public class DataIntegrityViolationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should fallback to server error when cause is not constraint violation")
     void shouldFallbackToServerErrorWhenCauseIsNotConstraintViolation() {
         // Given
         DataIntegrityViolationException ex = new DataIntegrityViolationException("Some other DB error", new RuntimeException("Nested"));
@@ -96,6 +99,7 @@ public class DataIntegrityViolationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should fallback to server error when regex does not match")
     void shouldFallbackToServerErrorWhenRegexDoesNotMatch() {
         // Given
         String weirdError = "Some weird constraint error without key pattern";
@@ -122,6 +126,7 @@ public class DataIntegrityViolationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should fallback to server error when sqlexception message is null")
     void shouldFallbackToServerErrorWhenSQLExceptionMessageIsNull() {
         // Given
         SQLException sqlEx = new SQLException((String) null);
@@ -147,6 +152,7 @@ public class DataIntegrityViolationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should fallback to server error when given incompatible exception")
     void shouldFallbackToServerErrorWhenGivenIncompatibleException() {
         // Given – handler receives an exception that is not DataIntegrityViolationException
         // (though factory would never route such, we test defensive logic)
@@ -171,6 +177,7 @@ public class DataIntegrityViolationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should propagate response entity from builder")
     void shouldPropagateResponseEntityFromBuilder() {
         // Given
         String postgresError = "Key (id)=(123) already exists.";

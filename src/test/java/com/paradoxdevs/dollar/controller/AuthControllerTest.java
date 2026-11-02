@@ -6,6 +6,7 @@ import com.paradoxdevs.dollar.api.response.AuthResponse;
 import com.paradoxdevs.dollar.api.response.UserResponse;
 import com.paradoxdevs.dollar.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,6 +42,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("Register success")
     void testRegister_Success() {
         when(authService.register(any(AuthRequest.class))).thenReturn(userResponse);
 
@@ -53,6 +55,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("Login success")
     void testLogin_Success() {
         when(authService.login(any(AuthRequest.class))).thenReturn(authResponse);
 
@@ -65,6 +68,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("Change password success")
     void testChangePassword_Success() {
         doNothing().when(authService).changePassword(any(PasswordRequest.class));
 
@@ -76,6 +80,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("Register calls auth service with correct request")
     void testRegister_CallsAuthServiceWithCorrectRequest() {
         authController.register(authRequest);
 
@@ -83,6 +88,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("Login calls auth service with correct request")
     void testLogin_CallsAuthServiceWithCorrectRequest() {
         when(authService.login(any(AuthRequest.class))).thenReturn(authResponse);
 
@@ -92,6 +98,7 @@ class AuthControllerTest {
     }
 
     @Test
+    @DisplayName("Change password calls auth service with correct request")
     void testChangePassword_CallsAuthServiceWithCorrectRequest() {
         authController.changePassword(passwordRequest);
 

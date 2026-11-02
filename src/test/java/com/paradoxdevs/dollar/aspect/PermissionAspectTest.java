@@ -6,6 +6,7 @@ import com.paradoxdevs.dollar.entity.Role;
 import com.paradoxdevs.dollar.error.exception.FeatureDisabledException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -69,6 +70,7 @@ public class PermissionAspectTest {
     }
 
     @Test
+    @DisplayName("Grant permissions allows when all checks pass")
     void grantPermissions_allowsWhenAllChecksPass() throws Throwable {
         PermissionAspect aspect = new PermissionAspect();
         UUID user = UUID.randomUUID();
@@ -86,6 +88,7 @@ public class PermissionAspectTest {
     }
 
     @Test
+    @DisplayName("Grant permissions feature disabled throws feature disabled exception")
     void grantPermissions_featureDisabled_throwsFeatureDisabledException() throws Throwable {
         PermissionAspect aspect = new PermissionAspect();
         UUID user = UUID.randomUUID();
@@ -101,6 +104,7 @@ public class PermissionAspectTest {
     }
 
     @Test
+    @DisplayName("Grant permissions self permission denies different user")
     void grantPermissions_selfPermission_deniesDifferentUser() throws Throwable {
         PermissionAspect aspect = new PermissionAspect();
         UUID user = UUID.randomUUID();
@@ -117,6 +121,7 @@ public class PermissionAspectTest {
     }
 
     @Test
+    @DisplayName("Grant permissions non self permission denies same user")
     void grantPermissions_nonSelfPermission_deniesSameUser() throws Throwable {
         PermissionAspect aspect = new PermissionAspect();
         UUID user = UUID.randomUUID();
@@ -132,6 +137,7 @@ public class PermissionAspectTest {
     }
 
     @Test
+    @DisplayName("Grant permissions prohibited role throws access denied")
     void grantPermissions_prohibitedRole_throwsAccessDenied() throws Throwable {
         PermissionAspect aspect = new PermissionAspect();
         UUID user = UUID.randomUUID();

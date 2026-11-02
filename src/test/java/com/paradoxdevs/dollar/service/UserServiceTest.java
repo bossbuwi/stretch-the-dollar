@@ -148,6 +148,17 @@ public class UserServiceTest {
             assertNotNull(result);
             assertEquals(user.getUsername(), result.getUsername());
         }
+
+        @Test
+        @DisplayName("Should throw when username does not exist")
+        void shouldThrowWhenUsernameDoesNotExist() {
+            when(userRepository.findByUsernameWithRoles("missing")).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> userService.getUserByUsername("missing"));
+
+            verify(userRepository).findByUsernameWithRoles("missing");
+            verifyNoInteractions(userMapper);
+        }
     }
 
     @Nested
@@ -164,6 +175,26 @@ public class UserServiceTest {
 
             assertNotNull(result);
             assertEquals(user.getUuid().toString(), result.getUuid());
+        }
+
+        @Test
+        @DisplayName("Should throw when uuid does not exist")
+        void shouldThrowWhenUuidDoesNotExist() {
+            String uuid = java.util.UUID.randomUUID().toString();
+            when(userRepository.findByUuidWithRoles(java.util.UUID.fromString(uuid))).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> userService.getUserByUuid(uuid));
+
+            verify(userRepository).findByUuidWithRoles(java.util.UUID.fromString(uuid));
+            verifyNoInteractions(userMapper);
+        }
+
+        @Test
+        @DisplayName("Should reject malformed uuid before repository access")
+        void shouldRejectMalformedUuidBeforeRepositoryAccess() {
+            assertThrows(IllegalArgumentException.class, () -> userService.getUserByUuid("not-a-uuid"));
+
+            verifyNoInteractions(userRepository, userMapper);
         }
     }
 
@@ -183,6 +214,19 @@ public class UserServiceTest {
 
             assertTrue(user.getRoles().contains(Role.USER));
             assertTrue(user.getRoles().contains(Role.ADMIN));
+            verify(userRepository).save(user);
+        }
+
+        @Test
+        @DisplayName("Should throw when target user does not exist")
+        void shouldThrowWhenTargetUserDoesNotExist() {
+            String uuid = java.util.UUID.randomUUID().toString();
+            when(userRepository.findByUuidWithRoles(java.util.UUID.fromString(uuid))).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> userService.makeAdmin(uuid));
+
+            verify(userRepository).findByUuidWithRoles(java.util.UUID.fromString(uuid));
+            verify(userRepository, never()).save(any());
         }
     }
 
@@ -222,6 +266,7 @@ public class UserServiceTest {
 
             assertTrue(user.getRoles().contains(Role.USER));
             assertTrue(user.getRoles().contains(Role.RESTRICTED));
+            verify(userRepository).save(user);
         }
     }
 
@@ -242,6 +287,7 @@ public class UserServiceTest {
 
             assertFalse(user.getRoles().contains(Role.RESTRICTED));
             assertTrue(user.getRoles().contains(Role.USER));
+            verify(userRepository).save(user);
         }
     }
 
@@ -261,6 +307,7 @@ public class UserServiceTest {
 
             assertTrue(user.getRoles().contains(Role.USER));
             assertTrue(user.getRoles().contains(Role.BANNED));
+            verify(userRepository).save(user);
         }
     }
 
@@ -281,6 +328,7 @@ public class UserServiceTest {
 
             assertFalse(user.getRoles().contains(Role.BANNED));
             assertTrue(user.getRoles().contains(Role.USER));
+            verify(userRepository).save(user);
         }
     }
 
@@ -309,6 +357,19 @@ public class UserServiceTest {
             assertFalse(user.getRoles().contains(Role.RESTRICTED));
             assertFalse(user.getRoles().contains(Role.BANNED));
             assertTrue(user.getRoles().contains(Role.USER));
+            verify(userRepository).save(user);
+        }
+
+        @Test
+        @DisplayName("Should throw when user to reset does not exist")
+        void shouldThrowWhenUserToResetDoesNotExist() {
+            String uuid = java.util.UUID.randomUUID().toString();
+            when(userRepository.findByUuidWithRoles(java.util.UUID.fromString(uuid))).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> userService.resetUser(uuid));
+
+            verify(userRepository).findByUuidWithRoles(java.util.UUID.fromString(uuid));
+            verify(userRepository, never()).save(any());
         }
     }
 }

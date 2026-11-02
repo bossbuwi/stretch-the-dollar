@@ -4,6 +4,7 @@ import com.paradoxdevs.dollar.api.response.ErrorResponse;
 import com.paradoxdevs.dollar.error.ErrorCode;
 import com.paradoxdevs.dollar.error.ErrorResponseBuilder;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -32,6 +33,7 @@ public class IllegalArgumentExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should return validation error with exception message")
     void shouldReturnValidationErrorWithExceptionMessage() {
         // Given
         String errorMessage = "Invalid parameter: 'id' must be positive";
@@ -55,6 +57,7 @@ public class IllegalArgumentExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should propagate response entity from builder")
     void shouldPropagateResponseEntityFromBuilder() {
         // Given
         String errorMessage = "Invalid input";
@@ -81,6 +84,7 @@ public class IllegalArgumentExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle exception with null message gracefully")
     void shouldHandleExceptionWithNullMessageGracefully() {
         // Given
         IllegalArgumentException ex = new IllegalArgumentException((String) null);
@@ -103,6 +107,7 @@ public class IllegalArgumentExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should always use request validation error code")
     void shouldAlwaysUseRequestValidationErrorCode() {
         // Given
         IllegalArgumentException ex = new IllegalArgumentException("Some message");

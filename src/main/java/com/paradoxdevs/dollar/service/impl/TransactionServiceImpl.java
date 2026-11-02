@@ -2,6 +2,7 @@ package com.paradoxdevs.dollar.service.impl;
 
 import com.paradoxdevs.dollar.api.request.TransactionRequest;
 import com.paradoxdevs.dollar.api.response.TransactionDetailsResponse;
+import com.paradoxdevs.dollar.aspect.annotation.CheckOwnership;
 import com.paradoxdevs.dollar.entity.Transaction;
 import com.paradoxdevs.dollar.entity.view.TransactionDetails;
 import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
@@ -53,5 +54,31 @@ public class TransactionServiceImpl implements TransactionService {
         TransactionDetails output = transactionDetailsView.findById(saved.getId())
                 .orElseThrow(ResourceNotFoundException::new);
         return transactionMapper.viewToResponse(output);
+    }
+
+    @Transactional
+    @CheckOwnership(Transaction.class)
+    @Override
+    public TransactionDetailsResponse updateTransaction(Long id, TransactionRequest request) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+        transactionMapper.updateEntityFromRequest(request, transaction);
+        Transaction saved = transactionRepository.saveAndFlush(transaction);
+        TransactionDetails output = transactionDetailsView.findById(saved.getId())
+                .orElseThrow(ResourceNotFoundException::new);
+        return transactionMapper.viewToResponse(output);
+    }
+
+    @Transactional
+    @CheckOwnership(Transaction.class)
+    @Override
+    public TransactionDetailsResponse deleteTransaction(Long id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+        TransactionDetails output = transactionDetailsView.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+        TransactionDetailsResponse response = transactionMapper.viewToResponse(output);
+        transactionRepository.delete(transaction);
+        return response;
     }
 }

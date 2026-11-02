@@ -9,4 +9,5 @@ public interface TransactionCategoryService {
     List<TransactionCategoryResponse> getTransactionItems();
     TransactionCategoryResponse getTransactionItemById(Long id);
     TransactionCategoryResponse addTransactionItem(TransactionCategoryRequest transactionCategoryRequest);
+    TransactionCategoryResponse updateTransactionItem(Long id, TransactionCategoryRequest transactionCategoryRequest);
 }

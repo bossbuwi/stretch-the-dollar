@@ -4,6 +4,7 @@ import com.paradoxdevs.dollar.api.response.ErrorResponse;
 import com.paradoxdevs.dollar.error.ErrorCode;
 import com.paradoxdevs.dollar.error.ErrorResponseBuilder;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -37,6 +38,7 @@ public class AuthenticationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should return internal server error for internal authentication service exception")
     void shouldReturnInternalServerErrorForInternalAuthenticationServiceException() {
         // Given
         InternalAuthenticationServiceException ex = new InternalAuthenticationServiceException("User database unavailable");
@@ -54,6 +56,7 @@ public class AuthenticationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should log error when internal authentication service exception occurs")
     void shouldLogErrorWhenInternalAuthenticationServiceExceptionOccurs() {
         // Given
         InternalAuthenticationServiceException ex = new InternalAuthenticationServiceException("DB connection failed");
@@ -69,6 +72,7 @@ public class AuthenticationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should return unauthorized for any other authentication exception")
     void shouldReturnUnauthorizedForAnyOtherAuthenticationException() {
         // Given
         AuthenticationException ex = new BadCredentialsException("Invalid username or password");
@@ -86,6 +90,7 @@ public class AuthenticationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should return unauthorized for concrete authentication exception subtypes")
     void shouldReturnUnauthorizedForConcreteAuthenticationExceptionSubtypes() {
         // This test uses a different subtype (e.g., LockedException) to ensure the generic path is used.
         // AuthenticationException is abstract; we can use an anonymous subclass or a real one.
@@ -106,6 +111,7 @@ public class AuthenticationExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle null message gracefully")
     void shouldHandleNullMessageGracefully() {
         // Given
         InternalAuthenticationServiceException ex = new InternalAuthenticationServiceException(null);

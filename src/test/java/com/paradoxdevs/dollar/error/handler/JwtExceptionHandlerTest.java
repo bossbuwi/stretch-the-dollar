@@ -8,6 +8,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SecurityException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -36,6 +37,7 @@ public class JwtExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle expired jwt exception")
     void shouldHandleExpiredJwtException() {
         // Given
         ExpiredJwtException ex = new ExpiredJwtException(null, null, "Token expired");
@@ -53,6 +55,7 @@ public class JwtExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle malformed jwt exception")
     void shouldHandleMalformedJwtException() {
         // Given
         MalformedJwtException ex = new MalformedJwtException("Malformed token");
@@ -70,6 +73,7 @@ public class JwtExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle security exception")
     void shouldHandleSecurityException() {
         // Given
         SecurityException ex = new SecurityException("Invalid signature");
@@ -87,6 +91,7 @@ public class JwtExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle generic jwt exception as unauthenticated")
     void shouldHandleGenericJwtExceptionAsUnauthenticated() {
         // Given
         // JwtException is abstract, so we create an anonymous subclass or use a mock.
@@ -106,6 +111,7 @@ public class JwtExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle non jwt exception as unauthenticated")
     void shouldHandleNonJwtExceptionAsUnauthenticated() {
         // Given – This scenario shouldn't happen in production, but we test defensive behavior
         RuntimeException ex = new RuntimeException("Some other error");
@@ -123,6 +129,7 @@ public class JwtExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should propagate response entity from builder")
     void shouldPropagateResponseEntityFromBuilder() {
         // Given
         ExpiredJwtException ex = new ExpiredJwtException(null, null, "Expired");

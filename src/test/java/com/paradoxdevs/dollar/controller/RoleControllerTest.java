@@ -2,6 +2,7 @@ package com.paradoxdevs.dollar.controller;
 
 import com.paradoxdevs.dollar.api.response.RoleResponse;
 import com.paradoxdevs.dollar.service.RoleService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.*;
 public class RoleControllerTest {
 
     @Test
+    @DisplayName("Get all roles returns list from service")
     void getAllRoles_returnsListFromService() {
         RoleService service = mock(RoleService.class);
         List<RoleResponse> roles = Arrays.asList(new RoleResponse("ROLE_USER"), new RoleResponse("ROLE_ADMIN"));
@@ -29,6 +31,7 @@ public class RoleControllerTest {
     }
 
     @Test
+    @DisplayName("Get all roles returns empty list")
     void getAllRoles_returnsEmptyList() {
         RoleService service = mock(RoleService.class);
         when(service.getAvailableRoles()).thenReturn(List.of());

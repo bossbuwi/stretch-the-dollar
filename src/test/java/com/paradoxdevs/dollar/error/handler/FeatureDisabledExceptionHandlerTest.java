@@ -5,6 +5,7 @@ import com.paradoxdevs.dollar.error.ErrorCode;
 import com.paradoxdevs.dollar.error.ErrorResponseBuilder;
 import com.paradoxdevs.dollar.error.exception.FeatureDisabledException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -32,6 +33,7 @@ public class FeatureDisabledExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should return feature disabled error for feature disabled exception")
     void shouldReturnFeatureDisabledErrorForFeatureDisabledException() {
         // Given
         FeatureDisabledException ex = new FeatureDisabledException();
@@ -54,6 +56,7 @@ public class FeatureDisabledExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should propagate response entity from builder")
     void shouldPropagateResponseEntityFromBuilder() {
         // Given
         FeatureDisabledException ex = new FeatureDisabledException();

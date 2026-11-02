@@ -14,4 +14,8 @@ public class TransactionCategoryResponse {
     private String name;
     private String description;
     private String transactionType;
+    private String createdBy;
+    private String createdAt;
+    private String updatedBy;
+    private String updatedAt;
 }

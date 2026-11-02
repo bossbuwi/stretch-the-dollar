@@ -253,6 +253,23 @@ public class AuthServiceTest {
             assertEquals("Token generation failed", exception.getMessage());
             verify(jwtService, times(1)).generateToken(user);
         }
+
+        @Test
+        @DisplayName("Should not generate a token when principal is not a User.")
+        void shouldRejectUnexpectedPrincipalType() {
+            AuthRequest request = new AuthRequest();
+            request.setUsername(USERNAME);
+            request.setPassword(PASSWORD);
+
+            Authentication auth = mock(Authentication.class);
+            when(auth.getPrincipal()).thenReturn("unexpected-principal");
+            when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                    .thenReturn(auth);
+
+            assertThrows(ClassCastException.class, () -> authService.login(request));
+
+            verifyNoInteractions(jwtService);
+        }
     }
 
     @Nested
@@ -346,6 +363,8 @@ public class AuthServiceTest {
             assertEquals(ErrorCode.OLD_NEW_PASSWORD_MATCH, exception.getErrorCode());
             verify(userRepository, times(1)).findByUsernameWithRoles(USERNAME);
             verify(passwordEncoder, times(2)).matches(PASSWORD, user.getPassword());
+            verify(passwordEncoder, never()).encode(anyString());
+            verify(userRepository, never()).save(any());
         }
 
         @Test
@@ -369,6 +388,7 @@ public class AuthServiceTest {
             assertEquals(ErrorCode.PASSWORDS_DONT_MATCH, exception.getErrorCode());
             verify(userRepository, times(1)).findByUsernameWithRoles(USERNAME);
             verify(userRepository, times(0)).save(any());
+            verify(passwordEncoder, never()).encode(anyString());
         }
 
         @Test
@@ -388,6 +408,52 @@ public class AuthServiceTest {
 
             assertEquals("Database connection failed", exception.getMessage());
             verify(userRepository, times(1)).findByUsernameWithRoles(USERNAME);
+        }
+
+        @Test
+        @DisplayName("Should not save password when encoding the replacement fails.")
+        void shouldPropagatePasswordEncodingFailure() {
+            PasswordRequest request = new PasswordRequest();
+            request.setUsername(USERNAME);
+            request.setPassword(PASSWORD);
+            request.setNewPassword("newPassword123");
+            request.setConfirmNewPassword("newPassword123");
+
+            User user = createValidUser();
+            RuntimeException failure = new RuntimeException("Password encoder unavailable");
+            when(userRepository.findByUsernameWithRoles(USERNAME)).thenReturn(Optional.of(user));
+            when(passwordEncoder.matches(PASSWORD, user.getPassword())).thenReturn(true);
+            when(passwordEncoder.matches("newPassword123", user.getPassword())).thenReturn(false);
+            when(passwordEncoder.encode("newPassword123")).thenThrow(failure);
+
+            RuntimeException exception = assertThrows(RuntimeException.class, () -> authService.changePassword(request));
+
+            assertEquals(failure, exception);
+            verify(userRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Should propagate password persistence failures.")
+        void shouldPropagatePasswordPersistenceFailure() {
+            PasswordRequest request = new PasswordRequest();
+            request.setUsername(USERNAME);
+            request.setPassword(PASSWORD);
+            request.setNewPassword("newPassword123");
+            request.setConfirmNewPassword("newPassword123");
+
+            User user = createValidUser();
+            RuntimeException failure = new RuntimeException("Database unavailable");
+            when(userRepository.findByUsernameWithRoles(USERNAME)).thenReturn(Optional.of(user));
+            when(passwordEncoder.matches(PASSWORD, user.getPassword())).thenReturn(true);
+            when(passwordEncoder.matches("newPassword123", user.getPassword())).thenReturn(false);
+            when(passwordEncoder.encode("newPassword123")).thenReturn("encoded-new-password");
+            when(userRepository.save(user)).thenThrow(failure);
+
+            RuntimeException exception = assertThrows(RuntimeException.class, () -> authService.changePassword(request));
+
+            assertEquals(failure, exception);
+            assertEquals("encoded-new-password", user.getPassword());
+            verify(userRepository).save(user);
         }
     }
 
