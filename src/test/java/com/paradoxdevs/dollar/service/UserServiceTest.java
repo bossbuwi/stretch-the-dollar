@@ -148,6 +148,16 @@ public class UserServiceTest {
             assertNotNull(result);
             assertEquals(user.getUsername(), result.getUsername());
         }
+
+        @Test
+        void shouldThrowWhenUsernameDoesNotExist() {
+            when(userRepository.findByUsernameWithRoles("missing")).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> userService.getUserByUsername("missing"));
+
+            verify(userRepository).findByUsernameWithRoles("missing");
+            verifyNoInteractions(userMapper);
+        }
     }
 
     @Nested
@@ -164,6 +174,24 @@ public class UserServiceTest {
 
             assertNotNull(result);
             assertEquals(user.getUuid().toString(), result.getUuid());
+        }
+
+        @Test
+        void shouldThrowWhenUuidDoesNotExist() {
+            String uuid = java.util.UUID.randomUUID().toString();
+            when(userRepository.findByUuidWithRoles(java.util.UUID.fromString(uuid))).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> userService.getUserByUuid(uuid));
+
+            verify(userRepository).findByUuidWithRoles(java.util.UUID.fromString(uuid));
+            verifyNoInteractions(userMapper);
+        }
+
+        @Test
+        void shouldRejectMalformedUuidBeforeRepositoryAccess() {
+            assertThrows(IllegalArgumentException.class, () -> userService.getUserByUuid("not-a-uuid"));
+
+            verifyNoInteractions(userRepository, userMapper);
         }
     }
 
@@ -183,6 +211,18 @@ public class UserServiceTest {
 
             assertTrue(user.getRoles().contains(Role.USER));
             assertTrue(user.getRoles().contains(Role.ADMIN));
+            verify(userRepository).save(user);
+        }
+
+        @Test
+        void shouldThrowWhenTargetUserDoesNotExist() {
+            String uuid = java.util.UUID.randomUUID().toString();
+            when(userRepository.findByUuidWithRoles(java.util.UUID.fromString(uuid))).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> userService.makeAdmin(uuid));
+
+            verify(userRepository).findByUuidWithRoles(java.util.UUID.fromString(uuid));
+            verify(userRepository, never()).save(any());
         }
     }
 
@@ -222,6 +262,7 @@ public class UserServiceTest {
 
             assertTrue(user.getRoles().contains(Role.USER));
             assertTrue(user.getRoles().contains(Role.RESTRICTED));
+            verify(userRepository).save(user);
         }
     }
 
@@ -242,6 +283,7 @@ public class UserServiceTest {
 
             assertFalse(user.getRoles().contains(Role.RESTRICTED));
             assertTrue(user.getRoles().contains(Role.USER));
+            verify(userRepository).save(user);
         }
     }
 
@@ -261,6 +303,7 @@ public class UserServiceTest {
 
             assertTrue(user.getRoles().contains(Role.USER));
             assertTrue(user.getRoles().contains(Role.BANNED));
+            verify(userRepository).save(user);
         }
     }
 
@@ -281,6 +324,7 @@ public class UserServiceTest {
 
             assertFalse(user.getRoles().contains(Role.BANNED));
             assertTrue(user.getRoles().contains(Role.USER));
+            verify(userRepository).save(user);
         }
     }
 
@@ -309,6 +353,18 @@ public class UserServiceTest {
             assertFalse(user.getRoles().contains(Role.RESTRICTED));
             assertFalse(user.getRoles().contains(Role.BANNED));
             assertTrue(user.getRoles().contains(Role.USER));
+            verify(userRepository).save(user);
+        }
+
+        @Test
+        void shouldThrowWhenUserToResetDoesNotExist() {
+            String uuid = java.util.UUID.randomUUID().toString();
+            when(userRepository.findByUuidWithRoles(java.util.UUID.fromString(uuid))).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> userService.resetUser(uuid));
+
+            verify(userRepository).findByUuidWithRoles(java.util.UUID.fromString(uuid));
+            verify(userRepository, never()).save(any());
         }
     }
 }
