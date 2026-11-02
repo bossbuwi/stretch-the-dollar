@@ -3,6 +3,7 @@ package com.paradoxdevs.dollar.aspect;
 import com.paradoxdevs.dollar.aspect.annotation.PerformanceMetrics;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import ch.qos.logback.classic.Logger;
@@ -25,6 +26,7 @@ public class PerformanceMetricsAspectTest {
     }
 
     @Test
+    @DisplayName("Log records execution end when proceed succeeds")
     void log_recordsExecutionEnd_whenProceedSucceeds() throws Throwable {
         PerformanceMetricsAspect aspect = new PerformanceMetricsAspect();
 
@@ -56,6 +58,7 @@ public class PerformanceMetricsAspectTest {
     }
 
     @Test
+    @DisplayName("Log logs exception and rethrows when proceed throws")
     void log_logsExceptionAndRethrows_whenProceedThrows() throws Throwable {
         PerformanceMetricsAspect aspect = new PerformanceMetricsAspect();
 

@@ -1,6 +1,7 @@
 package com.paradoxdevs.dollar.error;
 
 import com.paradoxdevs.dollar.api.response.ErrorResponse;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.WebRequest;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.*;
 public class ErrorResponseBuilderTest {
 
     @Test
+    @DisplayName("Build uses custom message when provided and sets status")
     void build_usesCustomMessage_whenProvided_andSetsStatus() {
         ErrorResponseBuilder builder = new ErrorResponseBuilder();
         WebRequest req = mock(WebRequest.class);
@@ -31,6 +33,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
+    @DisplayName("Build formats message with args and filters field errors")
     void build_formatsMessageWithArgs_andFiltersFieldErrors() {
         ErrorResponseBuilder builder = new ErrorResponseBuilder();
         WebRequest req = mock(WebRequest.class);
@@ -52,6 +55,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
+    @DisplayName("Build returns internal server for unknown code default")
     void build_returnsInternalServerForUnknownCode_default() {
         ErrorResponseBuilder builder = new ErrorResponseBuilder();
         WebRequest req = mock(WebRequest.class);
@@ -62,6 +66,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
+    @DisplayName("Build status mappings cover all cases")
     void build_status_mappings_cover_all_cases() {
         ErrorResponseBuilder builder = new ErrorResponseBuilder();
         WebRequest req = mock(WebRequest.class);
@@ -88,6 +93,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
+    @DisplayName("Build uses format message when custom blank and handles null args")
     void build_usesFormatMessage_whenCustomBlank_andHandlesNullArgs() {
         ErrorResponseBuilder builder = new ErrorResponseBuilder();
         WebRequest req = mock(WebRequest.class);
@@ -104,6 +110,7 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
+    @DisplayName("Build field errors blank only becomes null")
     void build_fieldErrors_blankOnly_becomesNull() {
         ErrorResponseBuilder builder = new ErrorResponseBuilder();
         WebRequest req = mock(WebRequest.class);

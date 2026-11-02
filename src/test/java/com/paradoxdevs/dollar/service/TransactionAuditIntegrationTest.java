@@ -10,6 +10,7 @@ import com.paradoxdevs.dollar.repository.TransactionCategoryRepository;
 import com.paradoxdevs.dollar.repository.TransactionRepository;
 import com.paradoxdevs.dollar.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,6 +52,7 @@ class TransactionAuditIntegrationTest {
     }
 
     @Test
+    @DisplayName("Update transaction records authenticated editor and modification time")
     void updateTransaction_recordsAuthenticatedEditorAndModificationTime() {
         User creator = saveUser("transaction-creator");
         User editor = saveUser("transaction-editor");
@@ -90,6 +92,7 @@ class TransactionAuditIntegrationTest {
     }
 
     @Test
+    @DisplayName("Delete transaction returns deleted details and removes transaction")
     void deleteTransaction_returnsDeletedDetailsAndRemovesTransaction() {
         User creator = saveUser("transaction-delete-creator");
         TransactionCategory category = saveCategory("transaction-delete-category");
@@ -115,6 +118,7 @@ class TransactionAuditIntegrationTest {
     }
 
     @Test
+    @DisplayName("Delete transaction rejects non owner and preserves transaction")
     void deleteTransaction_rejectsNonOwnerAndPreservesTransaction() {
         User creator = saveUser("transaction-delete-owner");
         User otherUser = saveUser("transaction-delete-other");

@@ -1,6 +1,7 @@
 package com.paradoxdevs.dollar.error;
 
 import com.paradoxdevs.dollar.api.response.ErrorResponse;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.*;
 public class ErrorResponseFactoryTest {
 
     @Test
+    @DisplayName("Build response entity delegates to exact strategy")
     void buildResponseEntity_delegatesToExactStrategy() {
         ExceptionHandlingStrategy strategy = mock(ExceptionHandlingStrategy.class);
         doReturn((Class<? extends Exception>)(Class<?>) IllegalArgumentException.class).when(strategy).getSupportedException();
@@ -35,6 +37,7 @@ public class ErrorResponseFactoryTest {
     }
 
     @Test
+    @DisplayName("Build response entity uses superclass strategy when exact missing")
     void buildResponseEntity_usesSuperclassStrategy_whenExactMissing() {
         ExceptionHandlingStrategy strategy = mock(ExceptionHandlingStrategy.class);
         doReturn((Class<? extends Exception>)(Class<?>) RuntimeException.class).when(strategy).getSupportedException();
@@ -55,6 +58,7 @@ public class ErrorResponseFactoryTest {
     }
 
     @Test
+    @DisplayName("Build response entity falls back to builder when no strategy found")
     void buildResponseEntity_fallsBackToBuilder_whenNoStrategyFound() {
         ErrorResponseBuilder builder = mock(ErrorResponseBuilder.class);
         ErrorResponse fallbackBody = ErrorResponse.builder().code(500).message("fallback").build();

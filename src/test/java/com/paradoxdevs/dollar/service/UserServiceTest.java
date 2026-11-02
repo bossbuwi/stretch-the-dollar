@@ -150,6 +150,7 @@ public class UserServiceTest {
         }
 
         @Test
+        @DisplayName("Should throw when username does not exist")
         void shouldThrowWhenUsernameDoesNotExist() {
             when(userRepository.findByUsernameWithRoles("missing")).thenReturn(Optional.empty());
 
@@ -177,6 +178,7 @@ public class UserServiceTest {
         }
 
         @Test
+        @DisplayName("Should throw when uuid does not exist")
         void shouldThrowWhenUuidDoesNotExist() {
             String uuid = java.util.UUID.randomUUID().toString();
             when(userRepository.findByUuidWithRoles(java.util.UUID.fromString(uuid))).thenReturn(Optional.empty());
@@ -188,6 +190,7 @@ public class UserServiceTest {
         }
 
         @Test
+        @DisplayName("Should reject malformed uuid before repository access")
         void shouldRejectMalformedUuidBeforeRepositoryAccess() {
             assertThrows(IllegalArgumentException.class, () -> userService.getUserByUuid("not-a-uuid"));
 
@@ -215,6 +218,7 @@ public class UserServiceTest {
         }
 
         @Test
+        @DisplayName("Should throw when target user does not exist")
         void shouldThrowWhenTargetUserDoesNotExist() {
             String uuid = java.util.UUID.randomUUID().toString();
             when(userRepository.findByUuidWithRoles(java.util.UUID.fromString(uuid))).thenReturn(Optional.empty());
@@ -357,6 +361,7 @@ public class UserServiceTest {
         }
 
         @Test
+        @DisplayName("Should throw when user to reset does not exist")
         void shouldThrowWhenUserToResetDoesNotExist() {
             String uuid = java.util.UUID.randomUUID().toString();
             when(userRepository.findByUuidWithRoles(java.util.UUID.fromString(uuid))).thenReturn(Optional.empty());

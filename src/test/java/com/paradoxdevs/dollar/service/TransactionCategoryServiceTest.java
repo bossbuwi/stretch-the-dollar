@@ -7,6 +7,7 @@ import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionCategoryMapper;
 import com.paradoxdevs.dollar.repository.TransactionCategoryRepository;
 import com.paradoxdevs.dollar.service.impl.TransactionCategoryServiceImpl;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -39,6 +40,7 @@ class TransactionCategoryServiceTest {
     private TransactionCategoryServiceImpl transactionCategoryService;
 
     @Test
+    @DisplayName("Get transaction items maps all categories in repository order")
     void getTransactionItems_mapsAllCategoriesInRepositoryOrder() {
         TransactionCategory groceries = category(1L, "Groceries", "EXPENSE");
         TransactionCategory salary = category(2L, "Salary", "INCOME");
@@ -58,6 +60,7 @@ class TransactionCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("Get transaction items returns empty list when no categories exist")
     void getTransactionItems_returnsEmptyListWhenNoCategoriesExist() {
         when(transactionCategoryRepository.findAll()).thenReturn(List.of());
 
@@ -69,6 +72,7 @@ class TransactionCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("Get transaction items propagates repository failure")
     void getTransactionItems_propagatesRepositoryFailure() {
         RuntimeException failure = new RuntimeException("Database unavailable");
         when(transactionCategoryRepository.findAll()).thenThrow(failure);
@@ -81,6 +85,7 @@ class TransactionCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("Get transaction item by id returns mapped category")
     void getTransactionItemById_returnsMappedCategory() {
         TransactionCategory category = category(8L, "Utilities", "EXPENSE");
         when(transactionCategoryRepository.findById(8L)).thenReturn(Optional.of(category));
@@ -97,6 +102,7 @@ class TransactionCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("Get transaction item by id throws when category does not exist")
     void getTransactionItemById_throwsWhenCategoryDoesNotExist() {
         when(transactionCategoryRepository.findById(8L)).thenReturn(Optional.empty());
 
@@ -108,6 +114,7 @@ class TransactionCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("Add transaction item maps request saves entity and returns saved category")
     void addTransactionItem_mapsRequestSavesEntityAndReturnsSavedCategory() {
         TransactionCategoryRequest request = TransactionCategoryRequest.builder()
                 .name("Travel")
@@ -136,6 +143,7 @@ class TransactionCategoryServiceTest {
     }
 
     @Test
+    @DisplayName("Add transaction item propagates repository failure")
     void addTransactionItem_propagatesRepositoryFailure() {
         TransactionCategoryRequest request = TransactionCategoryRequest.builder()
                 .name("Travel")

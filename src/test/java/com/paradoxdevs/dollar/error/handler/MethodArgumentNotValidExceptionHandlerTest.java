@@ -4,6 +4,7 @@ import com.paradoxdevs.dollar.api.response.ErrorResponse;
 import com.paradoxdevs.dollar.error.ErrorCode;
 import com.paradoxdevs.dollar.error.ErrorResponseBuilder;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -43,6 +44,7 @@ public class MethodArgumentNotValidExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should extract field errors and return validation error")
     void shouldExtractFieldErrorsAndReturnValidationError() {
         // Given
         FieldError error1 = new FieldError("user", "email", "must not be blank");
@@ -78,6 +80,7 @@ public class MethodArgumentNotValidExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle empty field errors")
     void shouldHandleEmptyFieldErrors() {
         // Given
         when(bindingResult.getFieldErrors()).thenReturn(List.of());
@@ -107,6 +110,7 @@ public class MethodArgumentNotValidExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should fallback to internal server error for incompatible exception")
     void shouldFallbackToInternalServerErrorForIncompatibleException() {
         // Given
         RuntimeException ex = new RuntimeException("Some other error");
@@ -131,6 +135,7 @@ public class MethodArgumentNotValidExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should propagate response entity from builder")
     void shouldPropagateResponseEntityFromBuilder() {
         // Given
         FieldError error = new FieldError("user", "email", "invalid");

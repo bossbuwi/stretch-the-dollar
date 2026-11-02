@@ -1,6 +1,7 @@
 package com.paradoxdevs.dollar.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import ch.qos.logback.classic.Logger;
@@ -18,6 +19,7 @@ public class DatabaseExecutionAspectTest {
     }
 
     @Test
+    @DisplayName("Log entity return logs start and end when proceed succeeds")
     void logEntityReturn_logsStartAndEnd_whenProceedSucceeds() throws Throwable {
         DatabaseExecutionAspect aspect = new DatabaseExecutionAspect();
 
@@ -48,6 +50,7 @@ public class DatabaseExecutionAspectTest {
     }
 
     @Test
+    @DisplayName("Log entity return logs error and rethrows when proceed throws")
     void logEntityReturn_logsErrorAndRethrows_whenProceedThrows() throws Throwable {
         DatabaseExecutionAspect aspect = new DatabaseExecutionAspect();
 

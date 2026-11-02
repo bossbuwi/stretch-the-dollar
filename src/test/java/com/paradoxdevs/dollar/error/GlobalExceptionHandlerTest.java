@@ -1,6 +1,7 @@
 package com.paradoxdevs.dollar.error;
 
 import com.paradoxdevs.dollar.api.response.ErrorResponse;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.WebRequest;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.*;
 public class GlobalExceptionHandlerTest {
 
     @Test
+    @DisplayName("Handle exception delegates to factory and returns response")
     void handleException_delegatesToFactory_andReturnsResponse() {
         ErrorResponseFactory factory = mock(ErrorResponseFactory.class);
         GlobalExceptionHandler handler = new GlobalExceptionHandler(factory);

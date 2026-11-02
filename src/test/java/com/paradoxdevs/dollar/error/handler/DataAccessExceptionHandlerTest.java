@@ -4,6 +4,7 @@ import com.paradoxdevs.dollar.api.response.ErrorResponse;
 import com.paradoxdevs.dollar.error.ErrorCode;
 import com.paradoxdevs.dollar.error.ErrorResponseBuilder;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -35,6 +36,7 @@ public class DataAccessExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should return internal server error with exception message")
     void shouldReturnInternalServerErrorWithExceptionMessage() {
         // Given
         String errorMessage = "Connection pool exhausted";
@@ -58,6 +60,7 @@ public class DataAccessExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle null message gracefully")
     void shouldHandleNullMessageGracefully() {
         // Given
         DataAccessException ex = new DataRetrievalFailureException(null);
@@ -80,6 +83,7 @@ public class DataAccessExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should propagate response entity from builder")
     void shouldPropagateResponseEntityFromBuilder() {
         // Given
         String errorMessage = "SQL error";
@@ -106,6 +110,7 @@ public class DataAccessExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should always use internal server error regardless of subtype")
     void shouldAlwaysUseInternalServerErrorRegardlessOfSubtype() {
         // Given
         // Use another concrete subclass: org.springframework.dao.DataAccessResourceFailureException

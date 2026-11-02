@@ -5,6 +5,7 @@ import com.paradoxdevs.dollar.error.ErrorCode;
 import com.paradoxdevs.dollar.error.ErrorResponseBuilder;
 import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -33,6 +34,7 @@ public class ResourceNotFoundExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle resource not found exception with error message")
     void shouldHandleResourceNotFoundExceptionWithErrorMessage() {
         // Given
         String expectedMessage = "User with id 123 not found";
@@ -51,6 +53,7 @@ public class ResourceNotFoundExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should pass message even if null")
     void shouldPassMessageEvenIfNull() {
         // Given
         ResourceNotFoundException ex = new ResourceNotFoundException(null);
@@ -68,6 +71,7 @@ public class ResourceNotFoundExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should fallback to internal server error for incompatible exception")
     void shouldFallbackToInternalServerErrorForIncompatibleException() {
         // Given
         RuntimeException ex = new RuntimeException("Something went wrong");
@@ -85,6 +89,7 @@ public class ResourceNotFoundExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should propagate response entity from builder for resource not found exception")
     void shouldPropagateResponseEntityFromBuilderForResourceNotFoundException() {
         // Given
         ResourceNotFoundException ex = new ResourceNotFoundException("Not found");

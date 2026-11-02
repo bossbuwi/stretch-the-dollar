@@ -5,6 +5,7 @@ import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityManager;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.access.AccessDeniedException;
@@ -50,6 +51,7 @@ public class OwnershipAspectTest {
     }
 
     @Test
+    @DisplayName("Check ownership allows admin")
     void checkOwnership_allowsAdmin() throws Throwable {
         EntityManager em = mock(EntityManager.class);
         AuditorAware<UUID> auditor = mock(AuditorAware.class);
@@ -66,6 +68,7 @@ public class OwnershipAspectTest {
     }
 
     @Test
+    @DisplayName("Check ownership throws not found when entity missing")
     void checkOwnership_throwsNotFound_whenEntityMissing() throws Throwable {
         EntityManager em = mock(EntityManager.class);
         AuditorAware<UUID> auditor = mock(AuditorAware.class);
@@ -83,6 +86,7 @@ public class OwnershipAspectTest {
     }
 
     @Test
+    @DisplayName("Check ownership throws access denied when not owner")
     void checkOwnership_throwsAccessDenied_whenNotOwner() throws Throwable {
         EntityManager em = mock(EntityManager.class);
         AuditorAware<UUID> auditor = mock(AuditorAware.class);
@@ -103,6 +107,7 @@ public class OwnershipAspectTest {
     }
 
     @Test
+    @DisplayName("Check ownership allows owner")
     void checkOwnership_allowsOwner() throws Throwable {
         EntityManager em = mock(EntityManager.class);
         AuditorAware<UUID> auditor = mock(AuditorAware.class);

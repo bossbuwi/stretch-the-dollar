@@ -9,6 +9,7 @@ import com.paradoxdevs.dollar.mapper.TransactionMapper;
 import com.paradoxdevs.dollar.repository.TransactionRepository;
 import com.paradoxdevs.dollar.repository.view.TransactionDetailsView;
 import com.paradoxdevs.dollar.service.impl.TransactionServiceImpl;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -48,6 +49,7 @@ class TransactionServiceTest {
     private TransactionServiceImpl transactionService;
 
     @Test
+    @DisplayName("Get transactions maps all details and preserves order")
     void getTransactions_mapsAllDetailsAndPreservesOrder() {
         TransactionDetails first = transactionDetails(1L, "First transaction");
         TransactionDetails second = transactionDetails(2L, "Second transaction");
@@ -67,6 +69,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Get transactions returns empty list when no transactions exist")
     void getTransactions_returnsEmptyListWhenNoTransactionsExist() {
         when(transactionDetailsView.findAll()).thenReturn(List.of());
 
@@ -78,6 +81,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Get transaction by id returns mapped details")
     void getTransactionById_returnsMappedDetails() {
         TransactionDetails details = transactionDetails(12L, "Requested transaction");
         when(transactionDetailsView.findById(12L)).thenReturn(Optional.of(details));
@@ -100,6 +104,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Get transaction by id throws when transaction does not exist")
     void getTransactionById_throwsWhenTransactionDoesNotExist() {
         when(transactionDetailsView.findById(12L)).thenReturn(Optional.empty());
 
@@ -110,6 +115,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Add transaction saves mapped entity and returns details")
     void addTransaction_savesMappedEntityAndReturnsDetails() {
         TransactionRequest request = validRequest("2026-02-20");
         Transaction saved = new Transaction();
@@ -142,6 +148,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Add transaction throws when saved transaction is missing from details view")
     void addTransaction_throwsWhenSavedTransactionIsMissingFromDetailsView() {
         Transaction saved = new Transaction();
         saved.setId(12L);
@@ -156,6 +163,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Add transaction rejects malformed date before saving")
     void addTransaction_rejectsMalformedDateBeforeSaving() {
         assertThrows(DateTimeParseException.class,
                 () -> transactionService.addTransaction(validRequest("20-02-2026")));
@@ -164,6 +172,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Update transaction updates editable fields and returns refreshed details")
     void updateTransaction_updatesEditableFieldsAndReturnsRefreshedDetails() {
         long id = 12L;
         UUID creator = UUID.randomUUID();
@@ -223,6 +232,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Update transaction throws when transaction does not exist")
     void updateTransaction_throwsWhenTransactionDoesNotExist() {
         long id = 12L;
         when(transactionRepository.findById(id)).thenReturn(Optional.empty());
@@ -233,6 +243,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Update transaction rejects malformed date before saving")
     void updateTransaction_rejectsMalformedDateBeforeSaving() {
         Transaction transaction = new Transaction();
         transaction.setId(12L);
@@ -247,6 +258,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Update transaction does not read response view when save fails")
     void updateTransaction_doesNotReadResponseViewWhenSaveFails() {
         Transaction transaction = new Transaction();
         transaction.setId(12L);
@@ -264,6 +276,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Update transaction throws when updated entity is missing from details view")
     void updateTransaction_throwsWhenUpdatedEntityIsMissingFromDetailsView() {
         Transaction transaction = new Transaction();
         transaction.setId(12L);
@@ -279,6 +292,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Delete transaction returns details before deleting")
     void deleteTransaction_returnsDetailsBeforeDeleting() {
         long id = 12L;
         Transaction transaction = new Transaction();
@@ -313,6 +327,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Delete transaction throws when transaction does not exist")
     void deleteTransaction_throwsWhenTransactionDoesNotExist() {
         long id = 12L;
         when(transactionRepository.findById(id)).thenReturn(Optional.empty());
@@ -323,6 +338,7 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("Delete transaction throws when details view does not contain transaction")
     void deleteTransaction_throwsWhenDetailsViewDoesNotContainTransaction() {
         long id = 12L;
         Transaction transaction = new Transaction();

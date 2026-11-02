@@ -5,6 +5,7 @@ import com.paradoxdevs.dollar.error.ErrorCode;
 import com.paradoxdevs.dollar.error.ErrorResponseBuilder;
 import com.paradoxdevs.dollar.error.exception.PasswordException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -31,6 +32,7 @@ public class PasswordExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle password exception with its error code")
     void shouldHandlePasswordExceptionWithItsErrorCode() {
         // Given
         ErrorCode expectedErrorCode = ErrorCode.UNAUTHORIZED; // or any other code
@@ -49,6 +51,7 @@ public class PasswordExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should handle password exception with default constructor")
     void shouldHandlePasswordExceptionWithDefaultConstructor() {
         // Given
         PasswordException ex = new PasswordException(); // uses default ErrorCode.UNAUTHORIZED
@@ -66,6 +69,7 @@ public class PasswordExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should fallback to internal server error for incompatible exception")
     void shouldFallbackToInternalServerErrorForIncompatibleException() {
         // Given
         RuntimeException ex = new RuntimeException("Something went wrong");
@@ -83,6 +87,7 @@ public class PasswordExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should propagate response entity from builder for password exception")
     void shouldPropagateResponseEntityFromBuilderForPasswordException() {
         // Given
         PasswordException ex = new PasswordException(ErrorCode.UNAUTHORIZED);

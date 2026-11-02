@@ -2,6 +2,7 @@ package com.paradoxdevs.dollar.controller;
 
 import com.paradoxdevs.dollar.api.response.UserResponse;
 import com.paradoxdevs.dollar.service.UserService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.*;
 public class UserControllerTest {
 
     @Test
+    @DisplayName("Index returns list from service")
     void index_returnsListFromService() {
         UserService service = mock(UserService.class);
         List<UserResponse> users = Arrays.asList(new UserResponse(), new UserResponse());
@@ -28,6 +30,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Get user by id returns user")
     void getUserById_returnsUser() {
         UserService service = mock(UserService.class);
         UserResponse ur = new UserResponse();
@@ -42,6 +45,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Get user by username returns user")
     void getUserByUsername_returnsUser() {
         UserService service = mock(UserService.class);
         UserResponse ur = new UserResponse();
@@ -56,6 +60,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Get user by uuid returns user")
     void getUserByUuid_returnsUser() {
         UserService service = mock(UserService.class);
         UserResponse ur = new UserResponse();
@@ -70,6 +75,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Make admin calls service and returns no content")
     void makeAdmin_callsService_andReturnsNoContent() {
         UserService service = mock(UserService.class);
         UserController controller = new UserController(service);
@@ -80,6 +86,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Demote admin calls service and returns no content")
     void demoteAdmin_callsService_andReturnsNoContent() {
         UserService service = mock(UserService.class);
         UserController controller = new UserController(service);
@@ -90,6 +97,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Restrict user calls service and returns no content")
     void restrictUser_callsService_andReturnsNoContent() {
         UserService service = mock(UserService.class);
         UserController controller = new UserController(service);
@@ -100,6 +108,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Allow user calls service and returns no content")
     void allowUser_callsService_andReturnsNoContent() {
         UserService service = mock(UserService.class);
         UserController controller = new UserController(service);
@@ -110,6 +119,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Ban user calls service and returns no content")
     void banUser_callsService_andReturnsNoContent() {
         UserService service = mock(UserService.class);
         UserController controller = new UserController(service);
@@ -120,6 +130,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Unban user calls service and returns no content")
     void unbanUser_callsService_andReturnsNoContent() {
         UserService service = mock(UserService.class);
         UserController controller = new UserController(service);
@@ -130,6 +141,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Reset user calls service and returns no content")
     void resetUser_callsService_andReturnsNoContent() {
         UserService service = mock(UserService.class);
         UserController controller = new UserController(service);
