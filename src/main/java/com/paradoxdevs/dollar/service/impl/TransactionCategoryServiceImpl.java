@@ -2,6 +2,7 @@ package com.paradoxdevs.dollar.service.impl;
 
 import com.paradoxdevs.dollar.api.request.TransactionCategoryRequest;
 import com.paradoxdevs.dollar.api.response.TransactionCategoryResponse;
+import com.paradoxdevs.dollar.aspect.annotation.CheckOwnership;
 import com.paradoxdevs.dollar.entity.TransactionCategory;
 import com.paradoxdevs.dollar.error.exception.ResourceNotFoundException;
 import com.paradoxdevs.dollar.mapper.TransactionCategoryMapper;
@@ -45,6 +46,17 @@ public class TransactionCategoryServiceImpl implements TransactionCategoryServic
     public TransactionCategoryResponse addTransactionItem(TransactionCategoryRequest request) {
         TransactionCategory input = transactionCategoryMapper.requestToEntity(request);
         TransactionCategory saved = transactionCategoryRepository.save(input);
+        return transactionCategoryMapper.entityToResponse(saved);
+    }
+
+    @Transactional
+    @CheckOwnership(TransactionCategory.class)
+    @Override
+    public TransactionCategoryResponse updateTransactionItem(Long id, TransactionCategoryRequest request) {
+        TransactionCategory category = transactionCategoryRepository.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+        transactionCategoryMapper.updateEntityFromRequest(request, category);
+        TransactionCategory saved = transactionCategoryRepository.saveAndFlush(category);
         return transactionCategoryMapper.entityToResponse(saved);
     }
 }

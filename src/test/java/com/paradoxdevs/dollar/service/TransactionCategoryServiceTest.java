@@ -17,8 +17,10 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -88,6 +90,10 @@ class TransactionCategoryServiceTest {
     @DisplayName("Get transaction item by id returns mapped category")
     void getTransactionItemById_returnsMappedCategory() {
         TransactionCategory category = category(8L, "Utilities", "EXPENSE");
+        category.setCreatedBy(UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"));
+        category.setCreatedAt(Instant.parse("2026-01-01T10:00:00Z"));
+        category.setUpdatedBy(UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"));
+        category.setUpdatedAt(Instant.parse("2026-02-01T10:00:00Z"));
         when(transactionCategoryRepository.findById(8L)).thenReturn(Optional.of(category));
 
         TransactionCategoryResponse response = transactionCategoryService.getTransactionItemById(8L);
@@ -96,6 +102,10 @@ class TransactionCategoryServiceTest {
         assertEquals("Utilities", response.getName());
         assertEquals("Recurring bill", response.getDescription());
         assertEquals("EXPENSE", response.getTransactionType());
+        assertEquals("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", response.getCreatedBy());
+        assertEquals("2026-01-01T10:00:00Z", response.getCreatedAt());
+        assertEquals("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", response.getUpdatedBy());
+        assertEquals("2026-02-01T10:00:00Z", response.getUpdatedAt());
         verify(transactionCategoryRepository).findById(8L);
         verify(transactionCategoryMapper).entityToResponse(category);
         verifyNoMoreInteractions(transactionCategoryRepository);
@@ -159,6 +169,52 @@ class TransactionCategoryServiceTest {
         assertEquals(failure, exception);
         verify(transactionCategoryMapper).requestToEntity(request);
         verifyNoMoreInteractions(transactionCategoryMapper);
+    }
+
+    @Test
+    @DisplayName("Update transaction item changes editable fields and preserves id and owner")
+    void updateTransactionItem_preservesIdentityAndOwner() {
+        TransactionCategory category = category(15L, "Old name", "EXPENSE");
+        UUID owner = UUID.randomUUID();
+        category.setCreatedBy(owner);
+        TransactionCategoryRequest request = TransactionCategoryRequest.builder()
+                .name("New name")
+                .description("Updated description")
+                .transactionType("INCOME")
+                .build();
+        when(transactionCategoryRepository.findById(15L)).thenReturn(Optional.of(category));
+        when(transactionCategoryRepository.saveAndFlush(category)).thenReturn(category);
+
+        TransactionCategoryResponse response = transactionCategoryService.updateTransactionItem(15L, request);
+
+        assertEquals(15L, category.getId());
+        assertEquals(owner, category.getCreatedBy());
+        assertEquals("New name", category.getName());
+        assertEquals("Updated description", category.getDescription());
+        assertEquals("INCOME", category.getTransactionType());
+        assertEquals(15L, response.getId());
+        assertEquals("New name", response.getName());
+        verify(transactionCategoryRepository).findById(15L);
+        verify(transactionCategoryRepository).saveAndFlush(category);
+        verify(transactionCategoryMapper).updateEntityFromRequest(request, category);
+        verify(transactionCategoryMapper).entityToResponse(category);
+    }
+
+    @Test
+    @DisplayName("Update transaction item throws when category does not exist")
+    void updateTransactionItem_throwsWhenCategoryDoesNotExist() {
+        TransactionCategoryRequest request = TransactionCategoryRequest.builder()
+                .name("New name")
+                .transactionType("EXPENSE")
+                .build();
+        when(transactionCategoryRepository.findById(15L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> transactionCategoryService.updateTransactionItem(15L, request));
+
+        verify(transactionCategoryRepository).findById(15L);
+        verifyNoMoreInteractions(transactionCategoryRepository);
+        verifyNoInteractions(transactionCategoryMapper);
     }
 
     private TransactionCategory category(Long id, String name, String transactionType) {

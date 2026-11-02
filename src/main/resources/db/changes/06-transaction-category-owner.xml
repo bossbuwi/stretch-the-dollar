@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd">
+
+    <changeSet id="6-add-transaction-category-audit-fields" author="paradox-devs">
+        <addColumn tableName="transaction_categories">
+            <column name="created_by" type="UUID"/>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="updated_by" type="UUID"/>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="transaction_categories" baseColumnNames="created_by"
+                                 referencedTableName="users" referencedColumnNames="uuid"
+                                 constraintName="fk_users_uuid_transaction_categories_created_by"/>
+        <addForeignKeyConstraint baseTableName="transaction_categories" baseColumnNames="updated_by"
+                                 referencedTableName="users" referencedColumnNames="uuid"
+                                 constraintName="fk_users_uuid_transaction_categories_updated_by"/>
+
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="transaction_categories"
+                                      constraintName="fk_users_uuid_transaction_categories_updated_by"/>
+            <dropForeignKeyConstraint baseTableName="transaction_categories"
+                                      constraintName="fk_users_uuid_transaction_categories_created_by"/>
+            <dropColumn tableName="transaction_categories" columnName="updated_at"/>
+            <dropColumn tableName="transaction_categories" columnName="updated_by"/>
+            <dropColumn tableName="transaction_categories" columnName="created_at"/>
+            <dropColumn tableName="transaction_categories" columnName="created_by"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
