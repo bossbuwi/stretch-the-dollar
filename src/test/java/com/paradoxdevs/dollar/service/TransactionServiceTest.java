@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -107,5 +108,62 @@ class TransactionServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> transactionService.updateTransaction(id, new TransactionRequest()));
 
         verifyNoInteractions(transactionDetailsView, transactionMapper);
+    }
+
+    @Test
+    void deleteTransaction_returnsDetailsBeforeDeleting() {
+        long id = 12L;
+        Transaction transaction = new Transaction();
+        transaction.setId(id);
+        Instant createdAt = Instant.parse("2026-01-01T10:00:00Z");
+        TransactionDetails details = new TransactionDetails(
+                id,
+                "Deleted transaction",
+                "Receipt",
+                "USD",
+                new BigDecimal("25.50"),
+                LocalDate.parse("2026-02-20"),
+                "Groceries",
+                "EXPENSE",
+                "creator",
+                createdAt,
+                "editor",
+                Instant.parse("2026-02-21T10:00:00Z")
+        );
+        when(transactionRepository.findById(id)).thenReturn(Optional.of(transaction));
+        when(transactionDetailsView.findById(id)).thenReturn(Optional.of(details));
+
+        TransactionDetailsResponse response = transactionService.deleteTransaction(id);
+
+        assertEquals(id, response.getId());
+        assertEquals("Deleted transaction", response.getName());
+        assertEquals("creator", response.getCreatedBy());
+        assertEquals("editor", response.getUpdatedBy());
+        var order = inOrder(transactionDetailsView, transactionRepository);
+        order.verify(transactionDetailsView).findById(id);
+        order.verify(transactionRepository).delete(transaction);
+    }
+
+    @Test
+    void deleteTransaction_throwsWhenTransactionDoesNotExist() {
+        long id = 12L;
+        when(transactionRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> transactionService.deleteTransaction(id));
+
+        verifyNoInteractions(transactionDetailsView, transactionMapper);
+    }
+
+    @Test
+    void deleteTransaction_throwsWhenDetailsViewDoesNotContainTransaction() {
+        long id = 12L;
+        Transaction transaction = new Transaction();
+        transaction.setId(id);
+        when(transactionRepository.findById(id)).thenReturn(Optional.of(transaction));
+        when(transactionDetailsView.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> transactionService.deleteTransaction(id));
+
+        verifyNoInteractions(transactionMapper);
     }
 }

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -86,12 +89,66 @@ class TransactionAuditIntegrationTest {
         assertEquals(updated.getUpdatedAt().truncatedTo(ChronoUnit.SECONDS), Instant.parse(response.getUpdatedAt()));
     }
 
+    @Test
+    void deleteTransaction_returnsDeletedDetailsAndRemovesTransaction() {
+        User creator = saveUser("transaction-delete-creator");
+        TransactionCategory category = saveCategory("transaction-delete-category");
+        setAuthentication(creator.getUuid(), Role.USER);
+
+        Transaction transaction = new Transaction();
+        transaction.setName("Deleted transaction");
+        transaction.setDescription("Transaction details before deletion");
+        transaction.setTransactionCategoryId(category.getId());
+        transaction.setAmount(new BigDecimal("42.75"));
+        transaction.setCurrency("USD");
+        transaction.setTransactionDate(LocalDate.parse("2026-03-10"));
+        transaction = transactionRepository.saveAndFlush(transaction);
+        Long id = transaction.getId();
+
+        TransactionDetailsResponse response = transactionService.deleteTransaction(id);
+
+        assertEquals(id, response.getId());
+        assertEquals("Deleted transaction", response.getName());
+        assertEquals("Transaction details before deletion", response.getDescription());
+        assertEquals("transaction-delete-creator", response.getCreatedBy());
+        assertFalse(transactionRepository.findById(id).isPresent());
+    }
+
+    @Test
+    void deleteTransaction_rejectsNonOwnerAndPreservesTransaction() {
+        User creator = saveUser("transaction-delete-owner");
+        User otherUser = saveUser("transaction-delete-other");
+        TransactionCategory category = saveCategory("transaction-delete-denied-category");
+        setAuthentication(creator.getUuid(), Role.USER);
+
+        Transaction transaction = new Transaction();
+        transaction.setName("Protected transaction");
+        transaction.setTransactionCategoryId(category.getId());
+        transaction.setAmount(new BigDecimal("42.75"));
+        transaction.setCurrency("USD");
+        transaction.setTransactionDate(LocalDate.parse("2026-03-10"));
+        transaction = transactionRepository.saveAndFlush(transaction);
+        Long id = transaction.getId();
+
+        setAuthentication(otherUser.getUuid(), Role.USER);
+
+        assertThrows(AccessDeniedException.class, () -> transactionService.deleteTransaction(id));
+        assertTrue(transactionRepository.findById(id).isPresent());
+    }
+
     private User saveUser(String username) {
         User user = new User();
         user.setUsername(username);
         user.setPassword("unused-test-password");
         user.setUuid(UUID.randomUUID());
         return userRepository.saveAndFlush(user);
+    }
+
+    private TransactionCategory saveCategory(String name) {
+        TransactionCategory category = new TransactionCategory();
+        category.setName(name);
+        category.setTransactionType("EXPENSE");
+        return transactionCategoryRepository.saveAndFlush(category);
     }
 
     private void setAuthentication(UUID userId, Role role) {

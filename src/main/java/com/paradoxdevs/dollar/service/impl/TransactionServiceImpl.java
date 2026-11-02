@@ -68,4 +68,17 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(ResourceNotFoundException::new);
         return transactionMapper.viewToResponse(output);
     }
+
+    @Transactional
+    @CheckOwnership(Transaction.class)
+    @Override
+    public TransactionDetailsResponse deleteTransaction(Long id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+        TransactionDetails output = transactionDetailsView.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+        TransactionDetailsResponse response = transactionMapper.viewToResponse(output);
+        transactionRepository.delete(transaction);
+        return response;
+    }
 }
