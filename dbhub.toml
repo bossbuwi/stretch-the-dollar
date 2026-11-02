@@ -1,0 +1,17 @@
+[[sources]]
+id = "stretch-the-dollar"
+type = "postgres"
+host = "localhost"
+port = 5432
+database = "test"
+user = "${SPRING_DATASOURCE_USERNAME}"
+password = "${SPRING_DATASOURCE_PASSWORD}"
+sslmode = "disable"
+connection_timeout = 10
+query_timeout = 30
+
+[[tools]]
+name = "execute_sql"
+source = "stretch-the-dollar"
+readonly = true
+max_rows = 500
