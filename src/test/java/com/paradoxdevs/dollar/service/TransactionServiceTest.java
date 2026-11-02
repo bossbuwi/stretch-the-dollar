@@ -233,6 +233,37 @@ class TransactionServiceTest {
     }
 
     @Test
+    void updateTransaction_rejectsMalformedDateBeforeSaving() {
+        Transaction transaction = new Transaction();
+        transaction.setId(12L);
+        when(transactionRepository.findById(12L)).thenReturn(Optional.of(transaction));
+
+        assertThrows(DateTimeParseException.class,
+                () -> transactionService.updateTransaction(12L, validRequest("20-02-2026")));
+
+        verify(transactionRepository).findById(12L);
+        verifyNoMoreInteractions(transactionRepository);
+        verifyNoInteractions(transactionDetailsView);
+    }
+
+    @Test
+    void updateTransaction_doesNotReadResponseViewWhenSaveFails() {
+        Transaction transaction = new Transaction();
+        transaction.setId(12L);
+        RuntimeException persistenceFailure = new RuntimeException("Database unavailable");
+        when(transactionRepository.findById(12L)).thenReturn(Optional.of(transaction));
+        when(transactionRepository.saveAndFlush(transaction)).thenThrow(persistenceFailure);
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> transactionService.updateTransaction(12L, validRequest("2026-02-20")));
+
+        assertEquals(persistenceFailure, exception);
+        verify(transactionRepository).findById(12L);
+        verify(transactionRepository).saveAndFlush(transaction);
+        verifyNoInteractions(transactionDetailsView);
+    }
+
+    @Test
     void updateTransaction_throwsWhenUpdatedEntityIsMissingFromDetailsView() {
         Transaction transaction = new Transaction();
         transaction.setId(12L);
@@ -301,6 +332,9 @@ class TransactionServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () -> transactionService.deleteTransaction(id));
 
+        verify(transactionRepository).findById(id);
+        verify(transactionDetailsView).findById(id);
+        verifyNoMoreInteractions(transactionRepository, transactionDetailsView);
         verifyNoInteractions(transactionMapper);
     }
 
