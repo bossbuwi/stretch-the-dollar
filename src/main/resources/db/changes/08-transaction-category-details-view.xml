@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd">
+
+    <changeSet id="8-create-transaction-category-details-view" author="paradox-devs">
+        <createView viewName="transaction_category_details_view" replaceIfExists="true">
+            SELECT
+                c.id,
+                c.name,
+                c.description,
+                c.transaction_type,
+                u1.username AS created_by_username,
+                c.created_at,
+                u2.username AS updated_by_username,
+                c.updated_at
+            FROM transaction_categories c
+                     LEFT JOIN users u1 ON c.created_by = u1.uuid
+                     LEFT JOIN users u2 ON c.updated_by = u2.uuid
+        </createView>
+
+        <rollback>
+            <dropView viewName="transaction_category_details_view"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -60,7 +60,7 @@ class TransactionCategoryOwnershipIntegrationTest {
         assertEquals("Edited category", response.getName());
         assertEquals("INCOME", response.getTransactionType());
         assertEquals(creator.getUuid(), updated.getCreatedBy());
-        assertEquals(creator.getUuid().toString(), response.getCreatedBy());
+        assertEquals(creator.getUsername(), response.getCreatedBy());
         assertNotNull(updated.getCreatedAt());
         assertEquals(updated.getCreatedAt().truncatedTo(ChronoUnit.SECONDS), Instant.parse(response.getCreatedAt()));
         assertEquals(creator.getUuid(), updated.getUpdatedBy());
@@ -82,10 +82,10 @@ class TransactionCategoryOwnershipIntegrationTest {
         TransactionCategory updated = transactionCategoryRepository.findById(category.getId()).orElseThrow();
 
         assertEquals(creator.getUuid(), updated.getCreatedBy());
-        assertEquals(creator.getUuid().toString(), response.getCreatedBy());
+        assertEquals(creator.getUsername(), response.getCreatedBy());
         assertEquals(createdAt, updated.getCreatedAt());
         assertEquals(editor.getUuid(), updated.getUpdatedBy());
-        assertEquals(editor.getUuid().toString(), response.getUpdatedBy());
+        assertEquals(editor.getUsername(), response.getUpdatedBy());
         assertNotNull(updated.getUpdatedAt());
         assertFalse(updated.getUpdatedAt().isBefore(createdAt));
         assertEquals(updated.getUpdatedAt().truncatedTo(ChronoUnit.SECONDS), Instant.parse(response.getUpdatedAt()));
@@ -123,6 +123,21 @@ class TransactionCategoryOwnershipIntegrationTest {
 
         assertEquals("Updated legacy category", response.getName());
         assertEquals("INCOME", response.getTransactionType());
+    }
+
+    @Test
+    @DisplayName("Category creation returns audit usernames")
+    void categoryCreationReturnsAuditUsernames() {
+        User creator = saveUser("category-create-auditor");
+        setAuthentication(creator.getUuid(), Role.USER);
+
+        TransactionCategoryResponse response = transactionCategoryService.addTransactionItem(
+                request("Created category", "EXPENSE"));
+
+        assertEquals(creator.getUsername(), response.getCreatedBy());
+        assertEquals(creator.getUsername(), response.getUpdatedBy());
+        assertNotNull(response.getCreatedAt());
+        assertNotNull(response.getUpdatedAt());
     }
 
     @Test

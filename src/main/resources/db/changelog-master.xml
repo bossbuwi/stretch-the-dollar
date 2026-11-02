@@ -11,5 +11,6 @@
     <include file="db/changes/04-transactions.xml"/>
     <include file="db/changes/05-transaction-details-view.xml"/>
     <include file="db/changes/06-transaction-category-owner.xml"/>
+    <include file="db/changes/08-transaction-category-details-view.xml"/>
 
 </databaseChangeLog>

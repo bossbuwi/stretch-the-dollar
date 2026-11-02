@@ -3,6 +3,7 @@ package com.paradoxdevs.dollar.mapper;
 import com.paradoxdevs.dollar.api.request.TransactionCategoryRequest;
 import com.paradoxdevs.dollar.api.response.TransactionCategoryResponse;
 import com.paradoxdevs.dollar.entity.TransactionCategory;
+import com.paradoxdevs.dollar.entity.view.TransactionCategoryDetails;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,7 +13,6 @@ import org.mapstruct.Named;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Mapper(componentModel="spring")
 public interface TransactionCategoryMapper {
@@ -26,16 +26,11 @@ public interface TransactionCategoryMapper {
     @Mapping(target = "transactionType", source = "transactionType")
     void updateEntityFromRequest(TransactionCategoryRequest request, @MappingTarget TransactionCategory category);
 
-    @Mapping(target = "createdBy", source = "createdBy", qualifiedByName = "uuidToString")
+    @Mapping(target = "createdBy", source = "createdByUsername")
     @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "instantToString")
-    @Mapping(target = "updatedBy", source = "updatedBy", qualifiedByName = "uuidToString")
+    @Mapping(target = "updatedBy", source = "updatedByUsername")
     @Mapping(target = "updatedAt", source = "updatedAt", qualifiedByName = "instantToString")
-    TransactionCategoryResponse entityToResponse(TransactionCategory from);
-
-    @Named("uuidToString")
-    default String uuidToString(UUID uuid) {
-        return uuid != null ? uuid.toString() : null;
-    }
+    TransactionCategoryResponse viewToResponse(TransactionCategoryDetails from);
 
     @Named("instantToString")
     default String instantToString(Instant instant) {
